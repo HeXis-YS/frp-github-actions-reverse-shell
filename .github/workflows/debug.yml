@@ -12,6 +12,11 @@ on:
           - ubuntu-18.04
           - ubuntu-20.04
           - ubuntu-22.04
+      mkswap:
+        type: boolean
+        description: Use whole /mnt as swap
+        required: false
+        default: false
 
 jobs:
   build:
@@ -29,6 +34,8 @@ jobs:
           echo 'ipv4: ${{ steps.ip.outputs.ipv4 }}'
           echo 'ipv6: ${{ steps.ip.outputs.ipv6 }}'
       - run: ./init.sh
+      - run: ./mkswap.sh
+        if: ${{ inputs.mkswap }}
       - run: ./install-frp.sh
       - name: run frpc
         env:
