@@ -26,13 +26,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Public IP
-        id: ip
-        uses: haythem/public-ip@v1.3
-      - name: Print Public IP
-        run: |
-          echo 'ipv4: ${{ steps.ip.outputs.ipv4 }}'
-          echo 'ipv6: ${{ steps.ip.outputs.ipv6 }}'
       - run: ./init.sh
       - run: ./mkswap.sh
         if: ${{ inputs.mkswap }}
