@@ -1,6 +1,7 @@
 #!/bin/bash
-MNT_DEVICE=$(mount | grep /mnt | awk '{print $1}')
 sudo swapoff -a
-sudo umount /mnt
-sudo mkswap $MNT_DEVICE
-sudo swapon $MNT_DEVICE
+sudo rm -rf /mnt/*
+sudo fallocate -l $(df --output=avail -B 1 . | tail -n 1) /mnt/swapfile
+sudo chmod 600 /mnt/swapfile
+sudo mkswap /mnt/swapfile
+sudo swapon /mnt/swapfile
