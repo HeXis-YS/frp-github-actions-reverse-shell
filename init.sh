@@ -8,4 +8,4 @@
 sudo sysctl -w net.ipv4.tcp_congestion_control=bbr
 
 # Mount /tmp as tmpfs
-sudo mount -t tmpfs -o rw,nosuid,nodev tmpfs /tmp
+sudo mount -t tmpfs -o rw,nosuid,nodev,size=10G tmpfs /tmp
