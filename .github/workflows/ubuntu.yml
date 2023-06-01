@@ -1,4 +1,4 @@
-name: SSH Debug Ubuntu
+name: Ubuntu
 
 on:
   workflow_dispatch:
