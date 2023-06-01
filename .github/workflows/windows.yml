@@ -1,17 +1,22 @@
 name: Windows
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      Windows:
+        type: choice
+        description: Windows dist the workflow will run on
+        required: true
+        default: windows-2022
+        options: 
+          - windows-2019
+          - windows-2022
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: ${{ github.event.inputs.Windows }}
+    strategy:
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
-      - name: Public IP
-        id: ip
-        uses: haythem/public-ip@v1.2
-      - name: Print Public IP
-        run: |
-          echo 'ipv4: ${{ steps.ip.outputs.ipv4 }}'
-          echo 'ipv6: ${{ steps.ip.outputs.ipv6 }}'
       - run: ./install-frp.ps1
       - name: run frpc
         env:

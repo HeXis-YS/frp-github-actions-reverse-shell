@@ -16,6 +16,12 @@ if (Test-Path env:FRPC_TLS_CA_CERTIFICATE) {
     Set-Content -Encoding Ascii ca/ca.pem $env:FRPC_TLS_CA_CERTIFICATE
 }
 
+# disable password complexity requirements
+secedit /export /cfg c:\secpol.cfg
+(gc C:\secpol.cfg).replace("PasswordComplexity = 1", "PasswordComplexity = 0") | Out-File C:\secpol.cfg
+secedit /configure /db c:\windows\security\local.sdb /cfg c:\secpol.cfg /areas SECURITYPOLICY
+rm -force c:\secpol.cfg -confirm:$false
+
 # set password when requested.
 if (Test-Path env:RUNNER_PASSWORD) {
     Write-Output "Setting the $env:USERNAME user password..."
@@ -30,4 +36,4 @@ if (Test-Path env:RUNNER_PASSWORD) {
 }
 
 Write-Output 'Running frpc...'
-./frp/frpc -c frpc-windows.ini 2>&1 | Select-Object {$_ -replace '[0-9\.]+:6969','***:6969'}; cmd /c exit 0
+./frp/frpc -c frpc-windows.ini 2>&1 | Select-Object {$_ -replace '[0-9\.]+:7000','***:7000'}; cmd /c exit 0
