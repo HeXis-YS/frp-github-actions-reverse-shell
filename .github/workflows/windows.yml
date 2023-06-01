@@ -16,7 +16,8 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - run: ./init.ps1
       - run: ./install-frp.ps1
       - name: run frpc
         env:
