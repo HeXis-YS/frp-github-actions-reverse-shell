@@ -1,20 +1,32 @@
-name: Ubuntu
-on: [push]
+name: SSH Debug Ubuntu
+
+on:
+  workflow_dispatch:
+    inputs:
+      Linux:
+        type: choice
+        description: Linux dist the workflow will run on
+        required: true
+        default: ubuntu-22.04
+        options: 
+          - ubuntu-20.04
+          - ubuntu-22.04
+      mkswap:
+        type: boolean
+        description: Use whole /mnt as swap
+        required: false
+        default: false
+
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ github.event.inputs.Linux }}
+    strategy:
+      fail-fast: false
     steps:
-      - uses: actions/checkout@v2
-      - name: Public IP
-        id: ip
-        uses: haythem/public-ip@v1.2
-      - name: Print Public IP
-        run: |
-          echo 'ipv4: ${{ steps.ip.outputs.ipv4 }}'
-          echo 'ipv6: ${{ steps.ip.outputs.ipv6 }}'
-      - run: ./generate-certificates.sh
-        env:
-          FRPS_DOMAIN: ${{ secrets.FRPS_DOMAIN }}
+      - uses: actions/checkout@v3
+      - run: ./init.sh
+      - run: ./mkswap.sh
+        if: ${{ inputs.mkswap }}
       - run: ./install-frp.sh
       - name: run frpc
         env:
@@ -25,3 +37,4 @@ jobs:
           FRPC_TLS_CA_CERTIFICATE: ${{ secrets.FRPC_TLS_CA_CERTIFICATE }}
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
         run: ./run-frpc.sh
+
