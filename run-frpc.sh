@@ -2,6 +2,15 @@
 exec 2>&1
 set -euxo pipefail
 
+# install frp
+mkdir -p frp
+pushd frp
+if [ ! -x frps ]; then
+    wget -qOfrp.tgz https://github.com/fatedier/frp/releases/download/v0.34.2/frp_0.34.2_linux_amd64.tar.gz
+    tar xf frp.tgz --strip-components=1
+fi
+popd
+
 # when running in CI override the frpc tls files.
 if [ -v FRPC_TLS_CA_CERTIFICATE ]; then
     mkdir -p ca

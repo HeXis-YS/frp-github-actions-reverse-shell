@@ -27,7 +27,6 @@ jobs:
       - run: ./init.sh
         env:
           INIT_MKSWAP: ${{ inputs.mkswap }}
-      - run: ./install-frp.sh
       - run: ./run-frpc.sh
         env:
           RUNNER_PASSWORD: ${{ secrets.RUNNER_PASSWORD }}
