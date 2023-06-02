@@ -19,3 +19,9 @@ if [[ ${INIT_MKSWAP} == 'true' ]]; then
     sudo mkswap /mnt/swapfile
     sudo swapon /mnt/swapfile
 fi
+
+# Remove unnecessary files
+if [[ ${INIT_CLEAN_SPACE} == 'true' ]]; then
+    sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" /opt/hostedtoolcache/CodeQL &
+    sudo docker image prune --all --force &
+fi

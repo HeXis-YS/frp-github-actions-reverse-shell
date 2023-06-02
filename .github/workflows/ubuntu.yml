@@ -15,7 +15,12 @@ on:
         type: boolean
         description: Use whole /mnt as swap
         required: false
-        default: false
+        default: true
+      clean_space:
+        type: boolean
+        description: Free up more space
+        required: false
+        default: true
 
 jobs:
   build:
@@ -27,6 +32,7 @@ jobs:
       - run: ./init.sh
         env:
           INIT_MKSWAP: ${{ inputs.mkswap }}
+          INIT_CLEAN_SPACE: ${{ inputs.mkswap }}
       - run: ./run-frpc.sh
         env:
           RUNNER_PASSWORD: ${{ secrets.RUNNER_PASSWORD }}
