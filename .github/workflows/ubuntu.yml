@@ -37,7 +37,7 @@ jobs:
       - run: ./init.sh
         env:
           INIT_MKSWAP: ${{ inputs.mkswap }}
-          INIT_CLEAN_SPACE: ${{ inputs.mkswap }}
+          INIT_CLEAN_SPACE: ${{ inputs.clean_space }}
           INIT_PORT_NUMBER: ${{ inputs.port_number }}
       - run: ./run-frpc.sh
         env:
