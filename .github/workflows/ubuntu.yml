@@ -14,13 +14,18 @@ on:
       mkswap:
         type: boolean
         description: Use whole /mnt as swap
-        required: false
+        required: true
         default: true
       clean_space:
         type: boolean
         description: Free up more space
-        required: false
+        required: true
         default: true
+      port_number:
+        type: number
+        description: Port number for frp service
+        required: true
+        default: 6000
 
 jobs:
   build:
@@ -33,6 +38,7 @@ jobs:
         env:
           INIT_MKSWAP: ${{ inputs.mkswap }}
           INIT_CLEAN_SPACE: ${{ inputs.mkswap }}
+          INIT_PORT_NUMBER: ${{ inputs.port_number }}
       - run: ./run-frpc.sh
         env:
           RUNNER_PASSWORD: ${{ secrets.RUNNER_PASSWORD }}
