@@ -10,6 +10,10 @@ sudo sysctl -w net.ipv4.tcp_congestion_control=bbr
 # Mount /tmp as tmpfs
 sudo mount -t tmpfs -o rw,nosuid,noatime,nodev,size=10G tmpfs /tmp
 
+# Tuning ext4 mount options
+sudo mount -o remount,noatime,nobarrier,nodiscard,commit=21600 /mnt
+sudo mount -o remount,noatime,nobarrier,nodiscard,commit=21600 /
+
 # Make the whole /mnt as swap
 if [[ ${INIT_MKSWAP} == 'true' ]]; then
     sudo swapoff -a
