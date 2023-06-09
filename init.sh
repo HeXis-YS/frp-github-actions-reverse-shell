@@ -32,3 +32,6 @@ fi
 
 # Replace port number for multiple instance
 sed -i "s/@PORT_NUMBER@/${INIT_PORT_NUMBER}/g" frpc.ini
+
+# Auto load .profile
+echo '. "$HOME/.profile"'>>"$HOME/.bash_profile"
