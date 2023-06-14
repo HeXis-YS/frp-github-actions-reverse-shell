@@ -25,8 +25,7 @@ jobs:
       - run: ./init.ps1
         env:
           INIT_SSH: ${{ inputs.ssh }}
-      - run: ./install-frp.ps1
-      - name: run frpc
+      - run: ./run-frpc.ps1
         env:
           RUNNER_PASSWORD: ${{ secrets.RUNNER_PASSWORD }}
           FRPS_DOMAIN: ${{ secrets.FRPS_DOMAIN }}
@@ -34,4 +33,3 @@ jobs:
           FRPC_TLS_CERTIFICATE: ${{ secrets.FRPC_TLS_CERTIFICATE }}
           FRPC_TLS_CA_CERTIFICATE: ${{ secrets.FRPC_TLS_CA_CERTIFICATE }}
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
-        run: ./run-frpc.ps1

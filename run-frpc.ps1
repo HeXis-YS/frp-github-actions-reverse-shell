@@ -7,6 +7,21 @@ trap {
     Exit 1
 }
 
+# Install frp
+mkdir -Force frp | Out-Null
+Push-Location frp
+
+if (!(Test-Path frps.exe)) {
+    Write-Output 'Downloading frp...'
+    (New-Object System.Net.WebClient).DownloadFile(
+        'https://github.com/fatedier/frp/releases/download/v0.49.0/frp_0.49.0_windows_amd64.zip',
+        "$PWD/frp.zip")
+    Write-Output 'Extracting frp...'
+    tar xf frp.zip --strip-components=1
+}
+
+Pop-Location
+
 # when running in CI override the frpc tls files.
 if (Test-Path env:FRPC_TLS_CA_CERTIFICATE) {
     Write-Output 'Configuring certificates...'
