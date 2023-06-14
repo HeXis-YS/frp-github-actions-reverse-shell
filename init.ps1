@@ -18,7 +18,7 @@ AdvancedRun.exe /EXEFilename "C:\Windows\System32\reg.exe" /CommandLine "add "HK
 
 # Disable password complexity requirements
 secedit /export /cfg C:\secpol.cfg
-(gc C:\secpol.cfg).replace("PasswordComplexity = 1", "PasswordComplexity = 0") | Out-File C:\secpol.cfg
+(Get-Content C:\secpol.cfg).replace("PasswordComplexity = 1", "PasswordComplexity = 0") | Set-Content C:\secpol.cfg
 secedit /configure /db c:\windows\security\local.sdb /cfg C:\secpol.cfg /areas SECURITYPOLICY
 rm -force C:\secpol.cfg -confirm:$false
 
@@ -27,6 +27,7 @@ if ($env:INIT_SSH -eq "true") {
     Write-Output 'Installing OpenSSH Server'
     Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*' | Add-WindowsCapability -Online
     Start-Service sshd
+    (Get-Content frpc-windows.ini).replace("#ssh ", "") | Set-Content frpc-windows.ini
 }
 
 # Show hidden files and file extensions in explorer
