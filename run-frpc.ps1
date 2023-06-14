@@ -14,7 +14,7 @@ Push-Location frp
 if (!(Test-Path frps.exe)) {
     Write-Output 'Downloading frp...'
     (New-Object System.Net.WebClient).DownloadFile(
-        'https://github.com/fatedier/frp/releases/download/v0.49.0/frp_0.49.0_windows_amd64.zip',
+        ((Invoke-WebRequest "https://api.github.com/repos/fatedier/frp/releases/latest" | ConvertFrom-Json).assets | Where-Object name -like "frp_*_windows_amd64.zip").browser_download_url,
         "$PWD/frp.zip")
     Write-Output 'Extracting frp...'
     tar xf frp.zip --strip-components=1
