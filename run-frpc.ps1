@@ -22,7 +22,7 @@ if (!(Test-Path frps.exe)) {
 
 Pop-Location
 
-# when running in CI override the frpc tls files.
+# When running in CI override the frpc tls files.
 if (Test-Path env:FRPC_TLS_CA_CERTIFICATE) {
     Write-Output 'Configuring certificates...'
     mkdir -Force ca | Out-Null
@@ -31,7 +31,7 @@ if (Test-Path env:FRPC_TLS_CA_CERTIFICATE) {
     Set-Content -Encoding Ascii ca/ca.pem $env:FRPC_TLS_CA_CERTIFICATE
 }
 
-# set password when requested.
+# Set password when requested.
 if (Test-Path env:RUNNER_PASSWORD) {
     Write-Output "Setting the $env:USERNAME user password..."
     Get-LocalUser $env:USERNAME `
