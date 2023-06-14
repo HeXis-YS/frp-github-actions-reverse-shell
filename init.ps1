@@ -14,5 +14,7 @@ secedit /configure /db c:\windows\security\local.sdb /cfg c:\secpol.cfg /areas S
 rm -force c:\secpol.cfg -confirm:$false
 
 # install OpenSSH
-Get-WindowsCapability -Online | Where-Object Name -like ‘OpenSSH.Server*’ | Add-WindowsCapability –Online
-Start-Service sshd
+if (Test-Path env:INIT_SSH) {
+    Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*' | Add-WindowsCapability -Online
+    Start-Service sshd
+}

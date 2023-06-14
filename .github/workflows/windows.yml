@@ -10,6 +10,11 @@ on:
         options: 
           - windows-2019
           - windows-2022
+      ssh:
+        type: boolean
+        description: Install OpenSSH
+        required: true
+        default: false
 jobs:
   build:
     runs-on: ${{ github.event.inputs.Windows }}
@@ -18,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: ./init.ps1
+        env:
+          INIT_SSH: ${{ inputs.ssh }}
       - run: ./install-frp.ps1
       - name: run frpc
         env:
