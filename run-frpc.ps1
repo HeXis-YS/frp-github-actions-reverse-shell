@@ -13,9 +13,14 @@ Push-Location frp
 
 if (!(Test-Path frps.exe)) {
     Write-Output 'Downloading frp...'
-    (New-Object System.Net.WebClient).DownloadFile(
-        ((Invoke-WebRequest "https://api.github.com/repos/fatedier/frp/releases/latest" | ConvertFrom-Json).assets | Where-Object name -like "frp_*_windows_amd64.zip").browser_download_url,
-        "$PWD/frp.zip")
+    try {
+        (New-Object System.Net.WebClient).DownloadFile(
+            ((Invoke-WebRequest "https://api.github.com/repos/fatedier/frp/releases/latest" | ConvertFrom-Json).assets | Where-Object name -like "frp_*_windows_amd64.zip").browser_download_url,
+            "$PWD/frp.zip")
+    } catch {
+        (New-Object System.Net.WebClient).DownloadFile("https://github.com/fatedier/frp/releases/download/v0.50.0/frp_0.50.0_windows_amd64.zip", "$PWD/frp.zip")
+    }
+
     Write-Output 'Extracting frp...'
     tar xf frp.zip --strip-components=1
 }
@@ -34,14 +39,7 @@ if (Test-Path env:FRPC_TLS_CA_CERTIFICATE) {
 # Set password when requested.
 if (Test-Path env:RUNNER_PASSWORD) {
     Write-Output "Setting the $env:USERNAME user password..."
-    Get-LocalUser $env:USERNAME `
-        | Set-LocalUser `
-            -Password (
-                ConvertTo-SecureString `
-                    -AsPlainText `
-                    -Force `
-                    $env:RUNNER_PASSWORD
-            )
+    Get-LocalUser $env:USERNAME | Set-LocalUser -Password (ConvertTo-SecureString -AsPlainText -Force $env:RUNNER_PASSWORD)
 }
 
 Write-Output 'Running frpc...'
