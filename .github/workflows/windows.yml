@@ -15,6 +15,11 @@ on:
         description: Install OpenSSH
         required: true
         default: false
+      pagefile:
+        type: boolean
+        description: Use larger pagefile (13GB)
+        required: true
+        default: true
 jobs:
   build:
     runs-on: ${{ github.event.inputs.Windows }}
@@ -22,6 +27,12 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
+      - if: ${{ inputs.pagefile }}
+        uses: al-cheb/configure-pagefile-action@v1.3
+        with:
+          minimum-size: 13GB
+          # maximum-size: 13GB
+          disk-root: "D:"
       - run: ./init.ps1
         env:
           INIT_SSH: ${{ inputs.ssh }}
