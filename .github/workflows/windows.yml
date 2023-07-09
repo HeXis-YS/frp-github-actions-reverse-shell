@@ -15,11 +15,16 @@ on:
         description: Install OpenSSH
         required: true
         default: false
-      pagefile:
+      pagefile_d:
         type: boolean
-        description: Use larger pagefile (13GB)
+        description: "Use larger pagefile (13GB) on D:"
         required: true
         default: true
+      pagefile_c:
+        type: boolean
+        description: "Use larger pagefile (12GB) on C:"
+        required: true
+        default: false
 jobs:
   build:
     runs-on: ${{ github.event.inputs.Windows }}
@@ -27,12 +32,18 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
-      - if: ${{ inputs.pagefile }}
+      - if: ${{ inputs.pagefile_d }}
         uses: al-cheb/configure-pagefile-action@v1.3
         with:
           minimum-size: 13GB
           # maximum-size: 13GB
           disk-root: "D:"
+      - if: ${{ inputs.pagefile_c }}
+        uses: al-cheb/configure-pagefile-action@v1.3
+        with:
+          minimum-size: 12GB
+          # maximum-size: 12GB
+          disk-root: "C:"
       - run: ./init.ps1
         env:
           INIT_SSH: ${{ inputs.ssh }}
