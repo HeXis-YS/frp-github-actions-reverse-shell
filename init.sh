@@ -34,4 +34,10 @@ fi
 sed -i "s/@PORT_NUMBER@/${INIT_PORT_NUMBER}/g" frpc.ini
 
 # Auto load .profile
-echo '. "$HOME/.profile"'>>"$HOME/.bash_profile"
+echo '. "$HOME/.profile"' >> "$HOME/.bash_profile"
+
+# OpenSSH cipher and kex
+sudo bash -c 'echo "Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
+sudo bash -c 'echo "KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,sntrup761x25519-sha512@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
+sudo systemctl restart sshd
+
