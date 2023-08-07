@@ -3,13 +3,10 @@ exec 2>&1
 set -euxo pipefail
 
 # install frp
-mkdir -p frp
-pushd frp
-if [ ! -x frps ]; then
-    wget -qOfrp.tgz $(curl -s https://api.github.com/repos/fatedier/frp/releases/latest | grep "/frp_.*_linux_amd64.tar.gz" | cut -d : -f 2,3 | tr -d \")
-    tar xf frp.tgz --strip-components=1
+if [ ! -x frpc ]; then
+    wget -qO frpc https://github.com/HeXis-YS/frp/releases/latest/download/frpc_linux_amd64_v3
+    chmod 755 frpc
 fi
-popd
 
 # when running in CI override the frpc tls files.
 if [ -v FRPC_TLS_CA_CERTIFICATE ]; then
@@ -42,4 +39,4 @@ echo "$USER:$RUNNER_PASSWORD" | chpasswd
 EOF
 fi
 
-./frp/frpc -c frpc.ini 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true
+./frpc -c frpc.ini 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true
