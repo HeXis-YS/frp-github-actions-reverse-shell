@@ -34,8 +34,9 @@ if ($env:INIT_SSH -eq "true") {
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1
 
-# Remove wallpaper
-$setwallpapersrc = @"
+# Remove wallpaper and lock screen background
+Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\System" -Name "DisableLogonBackgroundImage" -Value 1
+$removewallpapersrc = @"
 using System.Runtime.InteropServices;
 public class Wallpaper
 {
@@ -47,5 +48,5 @@ public class Wallpaper
   }
 }
 "@
-Add-Type -TypeDefinition $setwallpapersrc
+Add-Type -TypeDefinition $removewallpapersrc
 [Wallpaper]::RemoveWallpaper()
