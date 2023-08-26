@@ -33,3 +33,19 @@ if ($env:INIT_SSH -eq "true") {
 # Show hidden files and file extensions in explorer
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1
+
+# Remove wallpaper
+$setwallpapersrc = @"
+using System.Runtime.InteropServices;
+public class Wallpaper
+{
+  [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+  private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+  public static void RemoveWallpaper()
+  {
+    SystemParametersInfo(20, 0, "", 3);
+  }
+}
+"@
+Add-Type -TypeDefinition $setwallpapersrc
+[Wallpaper]::RemoveWallpaper()
