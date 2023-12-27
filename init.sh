@@ -41,3 +41,6 @@ sudo bash -c 'echo "Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha
 sudo bash -c 'echo "KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,sntrup761x25519-sha512@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
 sudo systemctl restart sshd
 
+# TMUX 24-bit color support
+echo 'set -sg terminal-overrides ",*:RGB"' >> ~/.tmux.conf
+echo 'set -ag terminal-overrides ",$TERM:RGB"' >> ~/.tmux.conf
