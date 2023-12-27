@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+# This script does the following:
+
+# zramswap start:
+#  Space is assigned to the zram device, then swap is initialized and enabled.
+# zramswap stop:
+#  Somewhat potentially dangerous, removes zram module at the end
+
+# https://github.com/torvalds/linux/blob/master/Documentation/blockdev/zram.txt
+
+readonly ZRAM_INDEX=0
+readonly ZRAM_DEV="/dev/zram${ZRAM_INDEX}"
+readonly ZRAM_STAT="/sys/block/zram${ZRAM_INDEX}"
+
+if command -v logger >/dev/null; then
+    function elog {
+        logger -s "Error: $*"
+        exit 1
+    }
+
+    function wlog {
+        logger -s "$*"
+    }
+else
+    function elog {
+        echo "Error: $*"
+        exit 1
+    }
+
+    function wlog {
+        echo "$*"
+    }
+fi
+
+function start {
+    wlog "Starting Zram"
+
+    # Set defaults if not specified
+    : "${ALGO:=zstd}" "${PERCENT:=400}" "${PRIORITY:=-1}"
+
+    readonly TOTAL_MEMORY_G=$(( ($(awk '/MemTotal/{print $2}' /proc/meminfo) + 1048575) / 1048576))
+    readonly SIZE="$((TOTAL_MEMORY_G * 1024 * PERCENT / 100))"
+
+    modprobe zram || elog "inserting the zram kernel module"
+    echo -n "${ALGO}" > "${ZRAM_STAT}/comp_algorithm" || elog "setting compression algo to ${ALGO}"
+    echo -n "${SIZE}M" > "${ZRAM_STAT}/disksize" || elog "setting zram device size to ${SIZE}"
+    mkswap "${ZRAM_DEV}" || elog "initialising swap device"
+    swapon -p "${PRIORITY}" "${ZRAM_DEV}" || elog "enabling swap device"
+}
+
+function status {
+    test -x "$(which zramctl)" || elog "install zramctl for this feature"
+    test -b "${ZRAM_DEV}" || elog "${ZRAM_DEV} doesn't exist"
+    # old zramctl doesn't have --output-all
+    #zramctl --output-all
+    zramctl "${ZRAM_DEV}"
+}
+
+function stop {
+    wlog "Stopping Zram"
+    test -b "${ZRAM_DEV}" || wlog "${ZRAM_DEV} doesn't exist"
+    swapoff "${ZRAM_DEV}" 2>/dev/null || wlog "disabling swap device: ${ZRAM_DEV}"
+    modprobe -r zram || elog "removing zram module from kernel"
+}
+
+function usage {
+    cat << EOF
+
+Usage:
+    zramswap (start|stop|restart|status)
+
+EOF
+}
+
+case "$1" in
+    start)      start;;
+    stop)       stop;;
+    restart)    stop && start;;
+    status)     status;;
+    "")         usage;;
+    *)          elog "Unknown option $1";;
+esac
