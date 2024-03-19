@@ -1,0 +1,15 @@
+﻿bindPort = 7000
+
+# configure TLS.
+transport.tls.force = false
+# transport.tls.certFile = "ca/{{ .Envs.FRPS_DOMAIN }}.pem"
+# transport.tls.keyFile = "ca/{{ .Envs.FRPS_DOMAIN }}-key.pem"
+# transport.tls.trustedCaFile = "ca/ca.pem"
+
+transport.tcpMux = false
+
+# configure the dashboard.
+# webServer.port = 7500
+# dashboard's username and password are both optional，if not set, default is admin.
+# webServer.user = "admin"
+# webServer.password = "admin"

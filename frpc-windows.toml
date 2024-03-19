@@ -1,0 +1,35 @@
+serverAddr = "{{ .Envs.FRPS_DOMAIN }}"
+serverPort = 7000
+
+# configure TLS.
+transport.tls.enable = false
+# transport.tls.certFile = "ca/github.pem"
+# transport.tls.keyFile = "ca/github-key.pem"
+# transport.tls.trustedCaFile = "ca/ca.pem"
+
+transport.tcpMux = false
+
+[[proxies]]
+name = "rdp_tcp"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 3389
+remotePort = 6001
+transport.useEncryption = false
+transport.useCompression = false
+
+[[proxies]]
+name = "rdp_udp"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = 3389
+remotePort = 6001
+
+#ssh [[proxies]]
+#ssh name = "winssh"
+#ssh type = "tcp"
+#ssh localIP = "127.0.0.1"
+#ssh localPort = 22
+#ssh remotePort = 6002
+#ssh transport.useEncryption = false
+#ssh transport.useCompression = false

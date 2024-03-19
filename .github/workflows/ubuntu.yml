@@ -20,7 +20,7 @@ on:
         type: boolean
         description: Free up more space
         required: true
-        default: true
+        default: false
       port_number:
         type: number
         description: Port number for frp service

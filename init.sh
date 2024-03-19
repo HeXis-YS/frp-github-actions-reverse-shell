@@ -31,7 +31,7 @@ if [[ ${INIT_CLEAN_SPACE} == 'true' ]]; then
 fi
 
 # Replace port number for multiple instance
-sed -i "s/@PORT_NUMBER@/${INIT_PORT_NUMBER}/g" frpc.ini
+sed -i "s/@PORT_NUMBER@/${INIT_PORT_NUMBER}/g" frpc.toml
 
 # Auto load .profile
 echo '. "$HOME/.profile"' >> "$HOME/.bash_profile"

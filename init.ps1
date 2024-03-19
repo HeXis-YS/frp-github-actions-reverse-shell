@@ -27,7 +27,7 @@ if ($env:INIT_SSH -eq "true") {
     Write-Output 'Installing OpenSSH Server'
     Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Server*' | Add-WindowsCapability -Online
     Start-Service sshd
-    (Get-Content frpc-windows.ini).replace("#ssh ", "") | Set-Content frpc-windows.ini
+    (Get-Content frpc-windows.toml).replace("#ssh ", "") | Set-Content frpc-windows.toml
 }
 
 # Show hidden files and file extensions in explorer

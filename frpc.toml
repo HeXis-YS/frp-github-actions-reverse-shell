@@ -1,0 +1,19 @@
+serverAddr = "{{ .Envs.FRPS_DOMAIN }}"
+serverPort = 7000
+
+# configure TLS.
+transport.tls.enable = false
+# transport.tls.certFile = "ca/github.pem"
+# transport.tls.keyFile = "ca/github-key.pem"
+# transport.tls.trustedCaFile = "ca/ca.pem"
+
+transport.tcpMux = false
+
+[[proxies]]
+name = "ssh_@PORT_NUMBER@"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 22
+remotePort = @PORT_NUMBER@
+transport.useEncryption = false
+transport.useCompression = false

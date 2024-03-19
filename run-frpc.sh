@@ -39,4 +39,4 @@ echo "$USER:$RUNNER_PASSWORD" | chpasswd
 EOF
 fi
 
-./frpc -c frpc.ini 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true
+./frpc -c frpc.toml 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true

@@ -17,16 +17,16 @@ export FRPS_DOMAIN=frps.example.com
 ./generate-certificates.sh
 ```
 
-Start the server with the [corresponding frps.ini configuration file](frps.ini):
+Start the server with the [corresponding frps.toml configuration file](frps.toml):
 
 ```bash
-./frp/frps -c ./frps.ini
+./frp/frps -c ./frps.toml
 ```
 
-Temporarily run the client in our machine to test everything with the [corresponding frpc.ini configuration file](frpc.ini):
+Temporarily run the client in our machine to test everything with the [corresponding frpc.toml configuration file](frpc.toml):
 
 ```bash
-./frp/frpc -c ./frpc.ini
+./frp/frpc -c ./frpc.toml
 ```
 
 Connect to the client SSH server:
