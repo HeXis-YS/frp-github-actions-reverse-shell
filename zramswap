@@ -37,7 +37,7 @@ function start {
     wlog "Starting Zram"
 
     # Set defaults if not specified
-    : "${ALGO:=zstd}" "${PERCENT:=400}" "${PRIORITY:=-1}"
+    : "${ALGO:=zstd}" "${PERCENT:=100}" "${PRIORITY:=-1}"
 
     readonly TOTAL_MEMORY_G=$(( ($(awk '/MemTotal/{print $2}' /proc/meminfo) + 1048575) / 1048576))
     readonly SIZE="$((TOTAL_MEMORY_G * 1024 * PERCENT / 100))"

@@ -45,10 +45,6 @@ echo '. "$HOME/.profile"' >> "$HOME/.bash_profile"
 echo 'set -sg terminal-overrides ",*:RGB"' >> ~/.tmux.conf
 echo 'set -ag terminal-overrides ",$TERM:RGB"' >> ~/.tmux.conf
 
-# Install nohang 
-sudo apt install --reinstall -y ./nohang-v0.2.0-17-gecf0ba7.deb
-sudo systemctl start nohang
-
 # Configure ZRAM
 sudo apt update
 sudo apt install -y linux-modules-extra-azure
