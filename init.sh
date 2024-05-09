@@ -47,7 +47,7 @@ echo 'set -ag terminal-overrides ",$TERM:RGB"' >> ~/.tmux.conf
 
 # Configure ZRAM
 sudo apt update
-sudo apt install -y linux-modules-extra-azure
+sudo apt install -y linux-modules-extra-$(uname -r)
 sudo swapoff -a
 sudo rm -rf /mnt/*
 sudo ./zramswap start
