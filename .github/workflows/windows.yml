@@ -6,10 +6,11 @@ on:
         type: choice
         description: Windows dist the workflow will run on
         required: true
-        default: windows-2022
+        default: windows-latest
         options: 
-          - windows-2019
+          - windows-latest
           - windows-2022
+          - windows-2019
       ssh:
         type: boolean
         description: Install OpenSSH
