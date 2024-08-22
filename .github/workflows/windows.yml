@@ -1,4 +1,6 @@
 name: Windows
+run-name: Windows (${{ github.event.inputs.Windows }}) ${{ github.sha }}
+
 on:
   workflow_dispatch:
     inputs:

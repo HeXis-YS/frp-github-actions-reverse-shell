@@ -1,4 +1,5 @@
 name: Ubuntu
+run-name: Ubuntu (${{ github.event.inputs.Linux }}) ${{ github.sha }}
 
 on:
   workflow_dispatch:
