@@ -14,6 +14,9 @@ sudo mount -t tmpfs -o rw,nosuid,noatime,nodev,size=$((($(awk '/MemTotal/{print 
 sudo mount -o remount,noatime,nobarrier,nodiscard,commit=21600 /mnt
 sudo mount -o remount,noatime,nobarrier,nodiscard,commit=21600 /
 
+# Permission
+sudo chown runner:docker /mnt
+
 # Make the whole /mnt as swap
 # if [[ ${INIT_MKSWAP} == 'true' ]]; then
 #     sudo swapoff -a
