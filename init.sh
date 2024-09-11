@@ -49,10 +49,16 @@ echo 'set -sg terminal-overrides ",*:RGB"' >> ~/.tmux.conf
 echo 'set -ag terminal-overrides ",$TERM:RGB"' >> ~/.tmux.conf
 
 # Configure ZRAM
-sudo apt update
-sudo apt install -y linux-modules-extra-$(uname -r)
-sudo swapoff -a
-sudo rm -rf /mnt/*
-sudo ./zramswap start
-sudo sysctl -w vm.swappiness=200
-sudo sysctl -w vm.page-cluster=0
+sudo bash <<EOF
+apt update
+apt install -y linux-modules-extra-$(uname -r)
+swapoff -a
+rm -f /mnt/swapfile
+modprobe zram
+echo -n zstd > /sys/block/zram0/comp_algorithm
+echo -n 16384M > /sys/block/zram0/disksize
+mkswap /dev/zram0
+swapon -p 0 /dev/zram0
+sysctl -w vm.swappiness=200
+sysctl -w vm.page-cluster=0
+EOF
