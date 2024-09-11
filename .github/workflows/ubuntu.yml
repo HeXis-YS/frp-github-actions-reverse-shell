@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: ./init.sh &
         env:
           # INIT_MKSWAP: ${{ inputs.mkswap }}
