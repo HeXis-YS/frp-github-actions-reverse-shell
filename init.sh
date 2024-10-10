@@ -50,15 +50,17 @@ echo 'set -ag terminal-overrides ",$TERM:RGB"' >> ~/.tmux.conf
 
 # Configure ZRAM
 sudo bash <<EOF
+tar -xf earlyoom.tar.gz -C /
+systemctl start earlyoom
 apt update
 apt install -y linux-modules-extra-$(uname -r)
-swapoff -a
-rm -f /mnt/swapfile
 modprobe zram
 echo -n zstd > /sys/block/zram0/comp_algorithm
-echo -n 16384M > /sys/block/zram0/disksize
+echo -n $(($(awk '/MemTotal/{print $2}' /proc/meminfo) * 5))K > /sys/block/zram0/disksize
 mkswap /dev/zram0
+swapoff -a
 swapon -p 0 /dev/zram0
 sysctl -w vm.swappiness=200
 sysctl -w vm.page-cluster=0
+rm -f /mnt/swapfile
 EOF
