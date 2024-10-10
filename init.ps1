@@ -25,12 +25,12 @@ if ($env:INIT_SSH -eq "true") {
     (Get-Content frpc-windows.toml).replace("#ssh ", "") | Set-Content frpc-windows.toml
 }
 
-# Show hidden files and file extensions in explorer
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1
+# Registry
+regedit /s windows-init.reg
+NET STOP Themes
+NET START Themes
 
-# Remove wallpaper and lock screen background
-Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\System" -Name "DisableLogonBackgroundImage" -Value 1
+# Remove wallpaper
 $removewallpapersrc = @"
 using System.Runtime.InteropServices;
 public class Wallpaper
