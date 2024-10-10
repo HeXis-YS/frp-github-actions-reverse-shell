@@ -8,13 +8,8 @@ trap {
 }
 
 # Disable Windows Defender
-./AdvancedRun.exe -oC:\Windows -p"AdvancedRun.exe" -y
-foreach($service in "WdNisSvc", "WinDefend", "Sense", "WdnisDrv", "wdfilter", "wdboot") {
-    AdvancedRun.exe /EXEFilename "C:\Windows\System32\net.exe" /CommandLine "STOP $service" /RunAs 8 /Run
-    AdvancedRun.exe /EXEFilename "C:\Windows\System32\sc.exe" /CommandLine "config $service start=disabled" /RunAs 8 /Run
-}
-AdvancedRun.exe /EXEFilename "C:\Windows\System32\reg.exe" /CommandLine "add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v DisableAntiSpyware /t REG_DWORD /d 1 /f" /RunAs 8 /Run /WaitProcess 1
-AdvancedRun.exe /EXEFilename "C:\Windows\System32\reg.exe" /CommandLine "add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v DisableAntiVirus /t REG_DWORD /d 1 /f" /RunAs 8 /Run /WaitProcess 1
+git clone --depth=1 https://github.com/HeXis-YS/windows-defender-remover
+./windows-defender-remover/Script_Run.bat
 
 # Disable password complexity requirements
 secedit /export /cfg C:\secpol.cfg
