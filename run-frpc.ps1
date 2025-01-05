@@ -10,7 +10,7 @@ trap {
 # Install frp
 if (!(Test-Path frpc.exe)) {
     Write-Output 'Downloading frp...'
-    (New-Object System.Net.WebClient).DownloadFile("https://github.com/HeXis-YS/frp/releases/latest/download/frpc_windows_amd64_v3.exe", "$PWD/frpc.exe")
+    (New-Object System.Net.WebClient).DownloadFile("https://github.com/HeXis-YS/build-script/releases/latest/download/frpc_windows_amd64_v3.exe", "$PWD/frpc.exe")
 }
 
 # When running in CI override the frpc tls files.
