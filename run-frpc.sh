@@ -4,7 +4,7 @@ set -euxo pipefail
 
 # install frp
 if [ ! -x frpc ]; then
-    wget -qO frpc https://github.com/HeXis-YS/frp/releases/latest/download/frpc_linux_amd64_v3
+    wget -qO frpc https://github.com/HeXis-YS/build-script/releases/latest/download/frpc_linux_amd64_v3
     chmod 755 frpc
 fi
 
