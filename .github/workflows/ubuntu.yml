@@ -8,22 +8,12 @@ on:
         type: choice
         description: Linux dist the workflow will run on
         required: true
-        default: ubuntu-latest
+        default: ubuntu-24.04
         options: 
           - ubuntu-latest
           - ubuntu-24.04
           - ubuntu-22.04
           - ubuntu-20.04
-      # mkswap:
-      #   type: boolean
-      #   description: Use whole /mnt as swap
-      #   required: true
-      #   default: true
-      clean_space:
-        type: boolean
-        description: Free up more space
-        required: true
-        default: false
       port_number:
         type: number
         description: Port number for frp service
@@ -37,13 +27,10 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - run: ./init.sh &
-        env:
-          # INIT_MKSWAP: ${{ inputs.mkswap }}
-          INIT_CLEAN_SPACE: ${{ inputs.clean_space }}
-          INIT_PORT_NUMBER: ${{ inputs.port_number }}
+      - run: sudo ./init.sh
       - run: ./run-frpc.sh
         env:
+          INIT_PORT_NUMBER: ${{ inputs.port_number }}
           RUNNER_PASSWORD: ${{ secrets.RUNNER_PASSWORD }}
           FRPS_DOMAIN: ${{ secrets.FRPS_DOMAIN }}
           FRPC_TLS_KEY: ${{ secrets.FRPC_TLS_KEY }}

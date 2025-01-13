@@ -33,10 +33,11 @@ if [ -v SSH_PUBLIC_KEY ]; then
 fi
 
 if [ -v RUNNER_PASSWORD ]; then
-    sudo bash <<EOF
-usermod -U $USER
-echo "$USER:$RUNNER_PASSWORD" | chpasswd
-EOF
+    sudo usermod -U $USER
+    echo "$USER:$RUNNER_PASSWORD" | sudo chpasswd
 fi
 
-./frpc -c frpc.toml 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true
+# Replace port number for multiple instance
+sed -i "s/@PORT_NUMBER@/${INIT_PORT_NUMBER}/g" frpc.toml
+
+GOGC=off GOMEMLIMIT=256MiB ./frpc -c frpc.toml 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true
