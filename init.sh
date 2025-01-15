@@ -20,19 +20,22 @@ echo -n 0 > /sys/class/block/sdb/queue/rotational
 echo -n none > /sys/class/block/sdb/queue/scheduler
 echo -n 2 > /sys/class/block/sdb/queue/rq_affinity
 
-# Tuning ext4 mount options for /
+# ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
-mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,nodiscard,commit=21600 /
+mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,nodiscard,dioread_nolock,commit=21600 /
 
-# Tuning ext4 mount options for /mnt
+# ext4 mount options for /mnt
 source /etc/os-release
 if [ "$VERSION_ID" == "24.04" ]; then
     umount /mnt
-    tune2fs -O "^has_journal" /dev/disk/cloud/azure_resource-part1
     e2fsck -y -f /dev/disk/cloud/azure_resource-part1
-    mount -o defaults,nodev,noatime,nodiratime,lazytime /mnt
+    tune2fs -O "fast_commit,^has_journal,^metadata_csum,^64bit,^huge_file" /dev/disk/cloud/azure_resource-part1
+    e2fsck -y -f /dev/disk/cloud/azure_resource-part1
+    resize2fs -s /dev/disk/cloud/azure_resource-part1
+    mount -o defaults,nodev,noatime,nodiratime,lazytime,dioread_nolock /mnt
 else
-    mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,nodiscard,commit=21600 /mnt
+    tune2fs -O fast_commit /dev/disk/cloud/azure_resource-part1
+    mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,nodiscard,dioread_nolock,commit=21600 /mnt
 fi
 
 # Mount /tmp as tmpfs
@@ -41,7 +44,7 @@ mount -t tmpfs -o rw,nodev,noatime,nodiratime,lazytime,size=$(awk '/MemTotal/{pr
 # /mnt permission
 chown runner:docker /mnt
 
-# Enable bbr by default
+# Sysctl
 sysctl -w \
     net.ipv4.tcp_congestion_control=bbr \
     net.core.default_qdisc=fq_codel \
@@ -88,7 +91,7 @@ sysctl -w \
     kernel.core_pattern="|/usr/bin/false" \
     kernel.randomize_va_space=0
 
-# Configure ZRAM
+# ZRAM
 apt update
 apt install -y linux-modules-extra-$(uname -r) earlyoom
 systemctl start earlyoom
