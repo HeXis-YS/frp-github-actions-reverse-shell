@@ -9,16 +9,12 @@ swapoff -a
 rm -f /mnt/swapfile
 
 # Disk tweaks
-echo -n 0 > /sys/class/block/sda/queue/add_random
-echo -n 0 > /sys/class/block/sda/queue/iostats
-echo -n 0 > /sys/class/block/sda/queue/rotational
-echo -n none > /sys/class/block/sda/queue/scheduler
-echo -n 2 > /sys/class/block/sda/queue/rq_affinity
-echo -n 0 > /sys/class/block/sdb/queue/add_random
-echo -n 0 > /sys/class/block/sdb/queue/iostats
-echo -n 0 > /sys/class/block/sdb/queue/rotational
-echo -n none > /sys/class/block/sdb/queue/scheduler
-echo -n 2 > /sys/class/block/sdb/queue/rq_affinity
+echo -n 0 | tee \
+    /sys/class/block/sd*/queue/add_random \
+    /sys/class/block/sd*/queue/iostats \
+    /sys/class/block/sd*/queue/rotational
+echo -n none | tee /sys/class/block/sd*/queue/scheduler
+echo -n 2 | tee /sys/class/block/sd*/queue/rq_affinity
 
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
