@@ -93,7 +93,7 @@ apt install -y linux-modules-extra-$(uname -r) earlyoom
 systemctl start earlyoom
 modprobe zram
 echo -n zstd > /sys/block/zram0/comp_algorithm
-echo -n $(($(awk '/MemTotal/{print $2}' /proc/meminfo) * 5))K > /sys/block/zram0/disksize
+echo -n $(($(awk '/MemTotal/{print $2}' /proc/meminfo) * 2))K > /sys/block/zram0/disksize
 mkswap /dev/zram0
 swapon -p 0 /dev/zram0
 sysctl -w  \
