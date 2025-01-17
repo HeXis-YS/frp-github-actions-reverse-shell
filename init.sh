@@ -1,8 +1,11 @@
 #!/bin/bash
-# Warn when workflow is about to close
-# (sleep 300m && wall "Warning: The workflow will be closed within 1 Hour.") &
-# (sleep 330m && wall "Warning: The workflow will be closed within 30 Minutes.") &
-# (sleep 350m && wall "Warning: The workflow will be closed within 10 Minutes.") &
+
+# Useful programs and libs
+mkdir -p /usr/local/lib64
+install -m 755 custom/bin/* /usr/local/bin/
+install -m 755 custom/lib64/* /usr/local/lib64/
+echo /usr/local/lib64 > /etc/ld.so.conf.d/custom.conf
+ldconfig
 
 # Disable swap
 swapoff -a
