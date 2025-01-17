@@ -10,15 +10,15 @@ rm -f /mnt/swapfile
 
 # Disk tweaks
 echo -n 0 | tee \
-    /sys/class/block/sd*/queue/add_random \
-    /sys/class/block/sd*/queue/iostats \
-    /sys/class/block/sd*/queue/rotational
-echo -n none | tee /sys/class/block/sd*/queue/scheduler
-echo -n 2 | tee /sys/class/block/sd*/queue/rq_affinity
+    /sys/class/block/sd[a-z]/queue/add_random \
+    /sys/class/block/sd[a-z]/queue/iostats \
+    /sys/class/block/sd[a-z]/queue/rotational
+echo -n none | tee /sys/class/block/sd[a-z]/queue/scheduler
+echo -n 2 | tee /sys/class/block/sd[a-z]/queue/rq_affinity
 
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
-mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,nodiscard,dioread_nolock,commit=21600 /
+mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,commit=21600 /
 
 # ext4 mount options for /mnt
 source /etc/os-release
@@ -28,10 +28,13 @@ if [ "$VERSION_ID" == "24.04" ]; then
     tune2fs -O "fast_commit,^has_journal,^metadata_csum,^64bit,^huge_file" /dev/disk/cloud/azure_resource-part1
     e2fsck -y -f /dev/disk/cloud/azure_resource-part1
     resize2fs -s /dev/disk/cloud/azure_resource-part1
-    mount -o defaults,nodev,noatime,nodiratime,lazytime,dioread_nolock /mnt
+    modprobe brd rd_size=65536 max_part=1
+    mke2fs -O journal_dev /dev/ram0
+    tune2fs -J device=/dev/ram0 /dev/disk/cloud/azure_resource-part1
+    mount -o nodev,noatime,nodiratime,lazytime,nojournal_checksum,journal_async_commit,nobarrier,commit=21600,data=writeback /mnt
 else
     tune2fs -O fast_commit /dev/disk/cloud/azure_resource-part1
-    mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,nodiscard,dioread_nolock,commit=21600 /mnt
+    mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,commit=21600 /mnt
 fi
 
 # Mount /tmp as tmpfs
