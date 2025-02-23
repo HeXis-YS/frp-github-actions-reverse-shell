@@ -49,7 +49,7 @@ chown runner:docker /mnt
 # Sysctl
 sysctl -w \
     net.ipv4.tcp_congestion_control=bbr \
-    net.core.default_qdisc=fq_codel \
+    net.core.default_qdisc=fq \
     net.ipv4.tcp_ecn=1 \
     net.ipv6.conf.all.disable_ipv6=1 \
     net.ipv6.conf.default.disable_ipv6=1 \
@@ -89,6 +89,8 @@ sysctl -w \
     net.ipv6.conf.default.accept_redirects=0 \
     net.ipv4.icmp_echo_ignore_all=1 \
     net.ipv6.icmp.echo_ignore_all=1 \
+    vm.dirty_ratio=50 \
+    vm.dirty_background_ratio=5 \
     vm.vfs_cache_pressure=50 \
     kernel.core_pattern="|/usr/bin/false" \
     kernel.randomize_va_space=0
@@ -123,3 +125,6 @@ echo 'set -ag terminal-overrides ",$TERM:RGB"' >> /home/runner/.tmux.conf
 # bash -c 'echo "Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
 # bash -c 'echo "KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,sntrup761x25519-sha512@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
 # systemctl restart sshd
+
+sync
+echo -n 3 > /proc/sys/vm/drop_caches
