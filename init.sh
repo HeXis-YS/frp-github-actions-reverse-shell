@@ -59,10 +59,10 @@ sysctl -w \
     net.ipv4.conf.all.forwarding=0 \
     net.core.netdev_max_backlog=16384 \
     net.core.somaxconn=8192 \
-    net.core.rmem_max=16777216 \
-    net.core.wmem_max=4194304 \
-    net.ipv4.tcp_rmem="4096 131072 16777216" \
-    net.ipv4.tcp_wmem="4096 131072 4194304" \
+    net.core.rmem_max=67108864 \
+    net.core.wmem_max=67108864 \
+    net.ipv4.tcp_rmem="4096 131072 67108864" \
+    net.ipv4.tcp_wmem="4096 131072 67108864" \
     net.ipv4.udp_rmem_min=8192 \
     net.ipv4.udp_wmem_min=8192 \
     net.ipv4.tcp_fastopen=3 \
