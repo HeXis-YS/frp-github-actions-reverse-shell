@@ -34,7 +34,7 @@ if [ "$VERSION_ID" == "24.04" ]; then
     modprobe brd rd_size=65536 max_part=1
     mke2fs -O journal_dev /dev/ram0
     tune2fs -J device=/dev/ram0 /dev/disk/cloud/azure_resource-part1
-    mount -o nodev,noatime,nodiratime,lazytime,nojournal_checksum,journal_async_commit,nobarrier,commit=21600,data=writeback /mnt
+    mount -o nodev,noatime,nodiratime,lazytime,journal_async_commit,nobarrier,commit=21600,data=writeback /mnt
 else
     tune2fs -O fast_commit /dev/disk/cloud/azure_resource-part1
     mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,commit=21600 /mnt
@@ -92,8 +92,7 @@ sysctl -w \
     vm.dirty_ratio=50 \
     vm.dirty_background_ratio=5 \
     vm.vfs_cache_pressure=50 \
-    kernel.core_pattern="|/usr/bin/false" \
-    kernel.randomize_va_space=0
+    kernel.core_pattern="|/usr/bin/false"
 
 # ZRAM
 apt update
