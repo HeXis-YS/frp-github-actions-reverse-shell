@@ -21,23 +21,19 @@ echo -n 2 | tee /sys/class/block/sd[a-z]/queue/rq_affinity
 
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
-mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,commit=21600 /
+mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,noauto_da_alloc,commit=21600 /
 
 # ext4 mount options for /mnt
 source /etc/os-release
 if [ "$VERSION_ID" == "24.04" ]; then
     umount /mnt
-    e2fsck -y -f /dev/disk/cloud/azure_resource-part1
-    tune2fs -O "fast_commit,^has_journal,^metadata_csum,^64bit,^huge_file" /dev/disk/cloud/azure_resource-part1
-    e2fsck -y -f /dev/disk/cloud/azure_resource-part1
-    resize2fs -s /dev/disk/cloud/azure_resource-part1
     modprobe brd rd_size=65536 max_part=1
-    mke2fs -O journal_dev /dev/ram0
-    tune2fs -J device=/dev/ram0 /dev/disk/cloud/azure_resource-part1
-    mount -o nodev,noatime,nodiratime,lazytime,journal_async_commit,nobarrier,commit=21600,data=writeback /mnt
+    mke2fs -F -O journal_dev /dev/ram0
+    mke2fs -F -O has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data,bigalloc -J device=/dev/ram0 /dev/disk/cloud/azure_resource-part1
+    mount -o nodev,noatime,nodiratime,lazytime,journal_async_commit,nobarrier,noauto_da_alloc,commit=21600,data=writeback /mnt
 else
     tune2fs -O fast_commit /dev/disk/cloud/azure_resource-part1
-    mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,commit=21600 /mnt
+    mount -o remount,nodev,noatime,nodiratime,lazytime,nobarrier,noauto_da_alloc,commit=21600 /mnt
 fi
 
 # Mount /tmp as tmpfs
