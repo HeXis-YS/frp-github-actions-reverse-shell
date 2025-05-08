@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 
+# Use libeatmydata
+echo /lib/x86_64-linux-gnu/libeatmydata.so > /etc/ld.so.preload
+ldconfig
+
 # Useful programs and libs
 mkdir -p /usr/local/lib64
 install -m 755 custom/bin/* /usr/local/bin/
