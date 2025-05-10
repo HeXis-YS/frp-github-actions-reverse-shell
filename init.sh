@@ -32,7 +32,7 @@ if [ "$VERSION_ID" == "24.04" ]; then
     umount /mnt
     modprobe brd rd_size=65536 max_part=1
     mke2fs -F -O journal_dev /dev/ram0
-    mke2fs -F -O ^resize_inode,has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data,bigalloc -E num_backup_sb=0 -J device=/dev/ram0 /dev/disk/cloud/azure_resource-part1
+    mke2fs -F -O ^resize_inode,has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data,bigalloc -E num_backup_sb=0 -J device=/dev/ram0 -m 0 /dev/disk/cloud/azure_resource-part1
     mount -o nodev,noatime,lazytime,journal_async_commit,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 /mnt
 else
     tune2fs -O fast_commit /dev/disk/cloud/azure_resource-part1
