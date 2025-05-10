@@ -1,19 +1,14 @@
 #!/usr/bin/bash
 
-# Use libeatmydata
-echo /lib/x86_64-linux-gnu/libeatmydata.so > /etc/ld.so.preload
-ldconfig
-
-# Useful programs and libs
+# Configure libs
 mkdir -p /usr/local/lib64
-install -m 755 custom/bin/* /usr/local/bin/
 install -m 755 custom/lib64/* /usr/local/lib64/
+echo /lib/x86_64-linux-gnu/libeatmydata.so > /etc/ld.so.preload
 echo /usr/local/lib64 > /etc/ld.so.conf.d/custom.conf
 ldconfig
 
-# Disable swap
-swapoff -a
-rm -f /mnt/swapfile
+# Useful programs
+install -m 755 custom/bin/* /usr/local/bin/
 
 # Disk tweaks
 echo -n 0 | tee \
@@ -25,7 +20,11 @@ echo -n 2 | tee /sys/class/block/sd[a-z]/queue/rq_affinity
 
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
-mount -o remount,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /
+mount -o remount,nodiscard,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /
+
+# Disable swap
+swapoff -a
+rm -f /mnt/swapfile
 
 # ext4 mount options for /mnt
 source /etc/os-release
@@ -92,7 +91,9 @@ sysctl -w \
     vm.dirty_ratio=50 \
     vm.dirty_background_ratio=5 \
     vm.vfs_cache_pressure=50 \
-    kernel.core_pattern="|/usr/bin/false"
+    vm.nr_hugepages=128 \
+    kernel.core_pattern="|/usr/bin/false" \
+    kernel.randomize_va_space=0
 
 # ZRAM
 apt update
@@ -125,5 +126,17 @@ echo 'set -ag terminal-overrides ",$TERM:RGB"' >> /home/runner/.tmux.conf
 # bash -c 'echo "KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,sntrup761x25519-sha512@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
 # systemctl restart sshd
 
+# TCP segmentation offload
+ethtool -K eth0 tso on
+
+# Disable some service
+systemctl disable --now ModemManager apparmor ufw
+
+# Synchronize caches
 sync
-echo -n 3 > /proc/sys/vm/drop_caches
+sysctl -w vm.drop_caches=3
+
+# Trim disk
+fstrim -v /mnt
+fstrim -v /boot
+fstrim -v /
