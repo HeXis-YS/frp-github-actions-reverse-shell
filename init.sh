@@ -3,7 +3,6 @@
 # Configure libs
 mkdir -p /usr/local/lib64
 install -m 755 custom/lib64/* /usr/local/lib64/
-echo /lib/x86_64-linux-gnu/libeatmydata.so > /etc/ld.so.preload
 echo /usr/local/lib64 > /etc/ld.so.conf.d/custom.conf
 ldconfig
 
