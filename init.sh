@@ -15,7 +15,9 @@ echo -n 0 | tee \
     /sys/class/block/sd[a-z]/queue/iostats \
     /sys/class/block/sd[a-z]/queue/rotational
 echo -n none | tee /sys/class/block/sd[a-z]/queue/scheduler
-echo -n 2 | tee /sys/class/block/sd[a-z]/queue/rq_affinity
+echo -n 2 | tee \
+    /sys/class/block/sd[a-z]/queue/rq_affinity \
+    /sys/class/block/sd[a-z]/queue/nomerges
 
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
