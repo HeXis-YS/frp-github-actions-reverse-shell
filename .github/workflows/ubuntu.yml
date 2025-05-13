@@ -27,7 +27,8 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - run: sudo eatmydata ./init.sh
+      - run: ./init.sh
+      - run: sudo ./init_root.sh
       - run: ./run-frpc.sh
         env:
           INIT_PORT_NUMBER: ${{ inputs.port_number }}
