@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# Configure libs
+# Build zlib-ng
 git clone https://github.com/zlib-ng/zlib-ng
 pushd zlib-ng
 git checkout $(git describe --abbrev=0 --tags)
@@ -19,7 +19,7 @@ make -j$(nproc)
 sudo make install
 popd
 popd
-sudo ldconfig
+# sudo ldconfig
 
 # Fix color terminal
 sed -i -e 's/xterm-color/xterm|xterm-color/' ~/.bashrc

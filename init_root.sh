@@ -1,4 +1,9 @@
 #!/usr/bin/bash
+# This script should be run as root
+
+# Configure libs
+echo /lib/x86_64-linux-gnu/libeatmydata.so > /etc/ld.so.preload
+ldconfig
 
 # Useful programs
 install -m 755 custom/bin/* /usr/local/bin/
