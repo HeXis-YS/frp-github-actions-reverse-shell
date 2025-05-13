@@ -34,7 +34,9 @@ if [ "$VERSION_ID" == "24.04" ]; then
     modprobe brd rd_size=65536 max_part=1
     mke2fs -F -O journal_dev /dev/ram0
     mke2fs -F -O ^resize_inode,has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data -E num_backup_sb=0 -J device=/dev/ram0 -m 0 /dev/disk/cloud/azure_resource-part1
-    mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 /mnt
+    mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 /dev/disk/cloud/azure_resource-part1 /mnt
+    # sudo mkfs.btrfs -f -O block-group-tree /dev/disk/cloud/azure_resource-part1
+    # mount -o nodev,noatime,lazytime,nobarrier,commit=21600,compress-force=zstd:15,nodiscard,ssd /dev/disk/cloud/azure_resource-part1 /mnt
 else
     tune2fs -O fast_commit /dev/disk/cloud/azure_resource-part1
     mount -o remount,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /mnt
@@ -127,6 +129,6 @@ sync
 sysctl -w vm.drop_caches=3
 
 # Trim disk
-fstrim -v /mnt
-fstrim -v /boot
-fstrim -v /
+# fstrim -v /mnt
+# fstrim -v /boot
+# fstrim -v /
