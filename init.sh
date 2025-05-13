@@ -1,9 +1,24 @@
 #!/usr/bin/bash
 
 # Configure libs
-mkdir -p /usr/local/lib64
-install -m 755 custom/lib64/* /usr/local/lib64/
-echo /usr/local/lib64 > /etc/ld.so.conf.d/custom.conf
+git clone https://github.com/zlib-ng/zlib-ng
+pushd zlib-ng
+git checkout $(git describe --abbrev=0 --tags)
+mkdir build
+pushd build
+cmake .. \
+    -DCMAKE_BUILD_TYPE=release \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_C_FLAGS_RELEASE="-Wno-unused-command-line-argument -Ofast -flto=full -fuse-ld=lld" \
+    -DZLIB_COMPAT=ON -DZLIB_ENABLE_TESTS=OFF \
+    -DWITH_NATIVE_INSTRUCTIONS=ON \
+    -DWITH_RUNTIME_CPU_DETECTION=OFF \
+    -DWITH_GTEST=OFF \
+    -DBUILD_SHARED_LIBS=ON
+make -j$(nproc)
+make install
+popd
+popd
 ldconfig
 
 # Useful programs
