@@ -116,7 +116,13 @@ sysctl -w  \
 # OpenSSH cipher and kex
 # bash -c 'echo "Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
 # bash -c 'echo "KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,sntrup761x25519-sha512@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
-# systemctl restart sshd
+
+# Fix password login
+sed -i -e '/^PasswordAuthentication/s/^/# /' -e '/^KbdInteractiveAuthentication/s/^/# /' \
+    /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*
+echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+echo "KbdInteractiveAuthentication yes" >> /etc/ssh/sshd_config
+systemctl restart ssh.socket
 
 # TCP segmentation offload
 ethtool -K eth0 tso on
