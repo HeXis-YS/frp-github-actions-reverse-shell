@@ -9,16 +9,18 @@ pushd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=release \
     -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_C_FLAGS_RELEASE="-Wno-unused-command-line-argument -Ofast -flto=full -fuse-ld=lld" \
-    -DZLIB_COMPAT=ON -DZLIB_ENABLE_TESTS=OFF \
+    -DCMAKE_C_FLAGS_RELEASE="-Ofast -flto=full" \
+    -DCMAKE_SHARED_LINKER_FLAGS="-s -fuse-ld=lld" \
+    -DZLIB_COMPAT=ON \
+    -DZLIB_ENABLE_TESTS=OFF \
     -DWITH_NATIVE_INSTRUCTIONS=ON \
     -DWITH_RUNTIME_CPU_DETECTION=OFF \
     -DWITH_GTEST=OFF \
     -DBUILD_SHARED_LIBS=ON
 make -j$(nproc)
 sudo make install
-popd
-popd
+popd # build
+popd # zlib-ng
 # sudo ldconfig
 
 # Fix color terminal
