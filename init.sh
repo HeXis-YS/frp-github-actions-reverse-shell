@@ -9,8 +9,8 @@ pushd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=release \
     -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_C_FLAGS_RELEASE="-Ofast -flto=full" \
-    -DCMAKE_SHARED_LINKER_FLAGS="-s -fuse-ld=lld" \
+    -DCMAKE_C_FLAGS_RELEASE="-Ofast -flto=full -fno-plt" \
+    -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld -s -Wl,-O2,--gc-sections" \
     -DZLIB_COMPAT=ON \
     -DZLIB_ENABLE_TESTS=OFF \
     -DWITH_NATIVE_INSTRUCTIONS=ON \
