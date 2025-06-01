@@ -98,6 +98,11 @@ sysctl -w \
     kernel.core_pattern="|/usr/bin/false" \
     kernel.randomize_va_space=0
 
+# Disable man-db processing
+dpkg-divert --divert /usr/bin/mandb.real --rename /usr/bin/mandb
+echo -e '#!/bin/sh\nexit 0' > /usr/bin/mandb
+chmod 755 /usr/bin/mandb
+
 # ZRAM
 apt update
 apt install -y linux-modules-extra-$(uname -r) earlyoom
