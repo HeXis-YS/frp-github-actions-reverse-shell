@@ -135,6 +135,11 @@ ethtool -K eth0 tso on
 # Disable some service
 systemctl disable --now ModemManager apparmor ufw
 
+# Docker
+mkdir -p /etc/docker
+echo '{"data-root": "/mnt/docker"}' > /etc/docker/daemon.json
+systemctl restart docker
+
 # Synchronize caches
 sync
 sysctl -w vm.drop_caches=3
