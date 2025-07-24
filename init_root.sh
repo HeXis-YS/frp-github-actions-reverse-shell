@@ -98,6 +98,9 @@ sysctl -w \
     kernel.core_pattern="|/usr/bin/false" \
     kernel.randomize_va_space=0
 
+# Replace qdisc manually
+tc qdisc replace dev eth0 root fq
+
 # Disable man-db processing
 dpkg-divert --divert /usr/bin/mandb.real --rename /usr/bin/mandb
 echo -e '#!/bin/sh\nexit 0' > /usr/bin/mandb
