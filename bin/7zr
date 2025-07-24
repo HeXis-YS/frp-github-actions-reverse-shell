@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+set -e
+
+source /usr/local/etc/action-shell/.buildflags
+
+pushd /tmp
+
+git clone -b linux https://github.com/HeXis-YS/7-Zip
+pushd 7-Zip/CPP/7zip/Bundles/Alone7z
+wget https://github.com/nidud/asmc/raw/refs/heads/master/bin/asmc64
+sudo install -m755 asmc64 /usr/local/bin/asmc
+make -j$(nproc) -f ../../cmpl_clang_x64.mak
+sudo install -m755 b/c_x64/7zr /usr/local/bin/7zr
+popd
+rm -rf 7-Zip
+
+popd

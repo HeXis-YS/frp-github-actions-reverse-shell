@@ -1,0 +1,29 @@
+#!/usr/bin/bash
+set -e
+
+source /usr/local/etc/action-shell/.buildflags
+
+pushd /tmp
+
+sudo apt install -y nasm
+git clone https://github.com/fhanau/Efficient-Compression-Tool ect
+pushd ect # /tmp/ect
+git checkout $(git describe --abbrev=0 --tags)
+git submodule update --init --recursive
+sed -i -e 's/size < 1200000000/1/g' src/main.cpp
+mkdir build
+pushd build # /tmp/ect/build
+cmake ../src \
+    -DCMAKE_BUILD_TYPE=release \
+    -DCMAKE_AR=$(which gcc-ar) \
+    -DCMAKE_RANLIB=$(which gcc-ranlib) \
+    -DCMAKE_C_FLAGS_RELEASE="$GCC_CFLAGS" \
+    -DCMAKE_CXX_FLAGS_RELEASE="$GCC_CFLAGS" \
+    -DCMAKE_EXE_LINKER_FLAGS="$GCC_LDFLAGS"
+make -j$(nproc)
+sudo install -m755 ect /usr/local/bin/ect
+popd # /tmp/ect
+popd # /tmp
+rm -rf ect
+
+popd

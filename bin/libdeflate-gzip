@@ -1,0 +1,25 @@
+#!/usr/bin/bash
+set -e
+
+source /usr/local/etc/action-shell/.buildflags
+
+pushd /tmp
+
+git clone https://github.com/ebiggers/libdeflate
+pushd libdeflate
+mkdir build
+pushd build
+cmake .. \
+    -DCMAKE_BUILD_TYPE=release \
+    -DCMAKE_AR=$(which gcc-ar) \
+    -DCMAKE_RANLIB=$(which gcc-ranlib) \
+    -DCMAKE_C_FLAGS_RELEASE="$GCC_CFLAGS" \
+    -DCMAKE_EXE_LINKER_FLAGS="$GCC_LDFLAGS" \
+    -DLIBDEFLATE_BUILD_SHARED_LIB=OFF
+make -j$(nproc)
+sudo install -m755 programs/libdeflate-gzip /usr/local/bin/libdeflate-gzip
+popd
+popd
+rm -rf libdeflate
+
+popd
