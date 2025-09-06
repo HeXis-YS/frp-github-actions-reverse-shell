@@ -143,6 +143,10 @@ mkdir -p /etc/docker
 echo '{"data-root": "/mnt/docker"}' > /etc/docker/daemon.json
 systemctl restart docker
 
+# Add runner to kvm group
+groupadd -r kvm
+gpasswd -a runner kvm
+
 # Synchronize caches
 sync
 sysctl -w vm.drop_caches=3
