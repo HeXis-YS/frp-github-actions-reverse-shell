@@ -1,14 +1,13 @@
-#!/usr/bin/bash
-set -e
+#!/usr/bin/bash -e
 
 source /usr/local/etc/action-shell/.buildflags
 
 pushd /tmp
 
-git clone https://github.com/ebiggers/libdeflate
-pushd libdeflate
-mkdir build
-pushd build
+git clone -b $(curl -s https://api.github.com/repos/ebiggers/libdeflate/tags | jq -r '.[0].name') \
+    --depth 1 --single-branch --no-tags https://github.com/ebiggers/libdeflate
+mkdir libdeflate/build
+pushd libdeflate/build
 cmake .. \
     -DCMAKE_BUILD_TYPE=release \
     -DCMAKE_AR=$(which gcc-ar) \
@@ -18,7 +17,6 @@ cmake .. \
     -DLIBDEFLATE_BUILD_SHARED_LIB=OFF
 make -j$(nproc)
 sudo install -m755 programs/libdeflate-gzip /usr/local/bin/libdeflate-gzip
-popd
 popd
 rm -rf libdeflate
 

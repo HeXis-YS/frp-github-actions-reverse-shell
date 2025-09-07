@@ -1,11 +1,10 @@
-#!/usr/bin/bash
-set -e
+#!/usr/bin/bash -e
 
 source /usr/local/etc/action-shell/.buildflags
 
 pushd /tmp
 
-git clone -b linux https://github.com/HeXis-YS/7-Zip
+git clone -b linux --depth 1 --single-branch --no-tags https://github.com/HeXis-YS/7-Zip
 pushd 7-Zip/CPP/7zip/Bundles/Alone7z
 wget https://github.com/nidud/asmc/raw/refs/heads/master/bin/asmc64
 sudo install -m755 asmc64 /usr/local/bin/asmc

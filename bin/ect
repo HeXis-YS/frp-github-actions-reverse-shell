@@ -1,15 +1,15 @@
-#!/usr/bin/bash
-set -e
+#!/usr/bin/bash -e
 
 source /usr/local/etc/action-shell/.buildflags
 
 pushd /tmp
 
+sudo apt update
 sudo apt install -y nasm
-git clone https://github.com/fhanau/Efficient-Compression-Tool ect
+git clone -b $(curl -s https://api.github.com/repos/fhanau/Efficient-Compression-Tool/tags | jq -r '.[0].name') \
+    --depth 1 --single-branch --no-tags https://github.com/fhanau/Efficient-Compression-Tool ect
 pushd ect # /tmp/ect
-git checkout $(git describe --abbrev=0 --tags)
-git submodule update --init --recursive
+git submodule update --init --recursive --depth 1 --single-branch
 sed -i -e 's/size < 1200000000/1/g' src/main.cpp
 mkdir build
 pushd build # /tmp/ect/build
