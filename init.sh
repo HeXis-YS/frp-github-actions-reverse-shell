@@ -8,11 +8,9 @@ source /usr/local/etc/action-shell/.buildflags
 pushd /tmp
 
 # Build zlib-ng
-git clone https://github.com/zlib-ng/zlib-ng
-pushd zlib-ng
-git checkout $(git describe --abbrev=0 --tags)
-mkdir build
-pushd build
+git clone -b stable --depth 1 --single-branch --no-tags https://github.com/zlib-ng/zlib-ng
+mkdir zlib-ng/build
+pushd zlib-ng/build
 cmake .. \
     -DCMAKE_BUILD_TYPE=release \
     -DCMAKE_C_COMPILER=clang \
@@ -28,14 +26,13 @@ cmake .. \
 make -j$(nproc)
 sudo make install
 sudo ldconfig
-popd # build
-popd # zlib-ng
+popd # zlib-ng/build
 rm -rf zlib-ng
 
-popd
+popd # /tmp
 
 # Fix color terminal
-sed -i -e 's/xterm-color/xterm|xterm-color/' ~/.bashrc
+sed -i 's/xterm-color/xterm|xterm-color/' ~/.bashrc
 
 # Merge .bash_profile into .profile
 cat ~/.bash_profile >> ~/.profile
