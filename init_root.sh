@@ -147,6 +147,11 @@ systemctl restart docker
 groupadd -r kvm
 gpasswd -a runner kvm
 
+# Move $HOME to /mnt
+mv /home/runner /mnt/runner
+ln -sf /mnt/runner /home/runner
+chown -h runner:docker /home/runner
+
 # Synchronize caches
 sync
 sysctl -w vm.drop_caches=3
