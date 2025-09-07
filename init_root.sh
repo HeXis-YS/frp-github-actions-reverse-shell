@@ -6,7 +6,7 @@ echo /lib/x86_64-linux-gnu/libeatmydata.so > /etc/ld.so.preload
 ldconfig
 
 # Useful programs
-install -m 755 custom/bin/* /usr/local/bin/
+install -m 755 bin/* /usr/local/bin/
 
 # Disk tweaks
 echo -n 0 | tee \
