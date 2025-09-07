@@ -16,8 +16,7 @@ echo -n 0 | tee \
 echo -n none | tee \
     /sys/class/block/sd[a-z]/queue/scheduler
 echo -n 2 | tee \
-    /sys/class/block/sd[a-z]/queue/rq_affinity \
-    /sys/class/block/sd[a-z]/queue/nomerges
+    /sys/class/block/sd[a-z]/queue/rq_affinity
 
 # Disable swap
 swapoff -a
@@ -94,7 +93,6 @@ sysctl -w \
     vm.dirty_ratio=50 \
     vm.dirty_background_ratio=5 \
     vm.vfs_cache_pressure=50 \
-    vm.nr_hugepages=128 \
     kernel.core_pattern="|/usr/bin/false" \
     kernel.randomize_va_space=0
 
@@ -131,12 +129,6 @@ sed -i -e '/^PasswordAuthentication/s/^/# /' -e '/^KbdInteractiveAuthentication/
 echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
 echo "KbdInteractiveAuthentication yes" >> /etc/ssh/sshd_config
 systemctl restart ssh.socket
-
-# TCP segmentation offload
-ethtool -K eth0 tso on
-
-# Disable some service
-systemctl disable --now ModemManager apparmor ufw
 
 # Docker
 mkdir -p /etc/docker
