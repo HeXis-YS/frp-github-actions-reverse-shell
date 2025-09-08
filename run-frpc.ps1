@@ -24,6 +24,11 @@ if (Test-Path env:FRPC_TLS_CA_CERTIFICATE) {
 
 # Set password when requested.
 if (Test-Path env:RUNNER_PASSWORD) {
+    # Disable password complexity requirements
+    secedit /export /cfg D:\secpol.cfg
+    (Get-Content D:\secpol.cfg).replace("PasswordComplexity = 1", "PasswordComplexity = 0") | Set-Content D:\secpol.cfg
+    secedit /configure /db C:\Windows\security\local.sdb /cfg D:\secpol.cfg /areas SECURITYPOLICY
+    rm -force D:\secpol.cfg -confirm:$false
     Write-Output "Setting the $env:USERNAME user password..."
     Get-LocalUser $env:USERNAME | Set-LocalUser -Password (ConvertTo-SecureString -AsPlainText -Force $env:RUNNER_PASSWORD)
 }

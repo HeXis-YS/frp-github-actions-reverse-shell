@@ -8,14 +8,11 @@ trap {
 }
 
 # Disable Windows Defender
-git clone --depth=1 https://github.com/HeXis-YS/windows-defender-remover
+pushd D:\
+git clone --depth 1 --single-branch --no-tags https://github.com/HeXis-YS/windows-defender-remover
 ./windows-defender-remover/Script_Run.bat
-
-# Disable password complexity requirements
-secedit /export /cfg C:\secpol.cfg
-(Get-Content C:\secpol.cfg).replace("PasswordComplexity = 1", "PasswordComplexity = 0") | Set-Content C:\secpol.cfg
-secedit /configure /db c:\windows\security\local.sdb /cfg C:\secpol.cfg /areas SECURITYPOLICY
-rm -force C:\secpol.cfg -confirm:$false
+rm windows-defender-remover -r -fo
+popd
 
 # Install OpenSSH
 if ($env:INIT_SSH -eq "true") {
@@ -25,23 +22,5 @@ if ($env:INIT_SSH -eq "true") {
     (Get-Content frpc-windows.toml).replace("#ssh ", "") | Set-Content frpc-windows.toml
 }
 
-# Registry
-regedit /s windows-init.reg
-NET STOP Themes
-NET START Themes
-
-# Remove wallpaper
-$removewallpapersrc = @"
-using System.Runtime.InteropServices;
-public class Wallpaper
-{
-  [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-  private static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
-  public static void RemoveWallpaper()
-  {
-    SystemParametersInfo(20, 0, "", 3);
-  }
-}
-"@
-Add-Type -TypeDefinition $removewallpapersrc
-[Wallpaper]::RemoveWallpaper()
+# Recover classic right-click menu
+REG ADD "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
