@@ -4,7 +4,11 @@ set -euxo pipefail
 
 # install frp
 if [ ! -x frpc ]; then
-    wget -qO frpc https://github.com/HeXis-YS/build-script/releases/latest/download/frpc_linux_amd64_v3
+    if [ $(uname -m) == "aarch64" ]; then
+        wget -qO frpc https://github.com/HeXis-YS/build-script/releases/latest/download/frpc_linux_arm64_v9.0
+    else
+        wget -qO frpc https://github.com/HeXis-YS/build-script/releases/latest/download/frpc_linux_amd64_v3
+    fi
     chmod 755 frpc
 fi
 
@@ -40,4 +44,4 @@ fi
 # Replace port number for multiple instance
 sed -i "s/@PORT_NUMBER@/${INIT_PORT_NUMBER}/g" frpc.toml
 
-GOGC=off GOMEMLIMIT=256MiB ./frpc -c frpc.toml 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true
+./frpc -c frpc.toml 2>&1 | sed -E 's,[0-9\.]+:7000,***:7000,ig' || true

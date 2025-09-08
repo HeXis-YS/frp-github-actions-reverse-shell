@@ -2,7 +2,7 @@
 # This script should be run as root
 
 # Configure libs
-echo /lib/x86_64-linux-gnu/libeatmydata.so > /etc/ld.so.preload
+echo /lib/$(uname -m)-linux-gnu/libeatmydata.so > /etc/ld.so.preload
 ldconfig
 
 # Useful programs
@@ -160,6 +160,9 @@ gpasswd -a runner kvm
 mv /home/runner /mnt/runner
 ln -sf /mnt/runner /home/runner
 chown -h runner:docker /home/runner
+
+# Fix arm default shell
+chsh -s $(which bash)
 
 # Synchronize caches
 sync

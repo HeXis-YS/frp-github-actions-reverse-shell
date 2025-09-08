@@ -1,19 +1,19 @@
 name: Ubuntu
-run-name: Ubuntu (${{ github.event.inputs.Linux }}) ${{ github.sha }}
+run-name: Ubuntu (${{ github.event.inputs.ubuntu_version }}) ${{ github.sha }}
 
 on:
   workflow_dispatch:
     inputs:
-      Linux:
+      ubuntu_version:
         type: choice
         description: Linux dist the workflow will run on
         required: true
         default: ubuntu-24.04
         options: 
-          - ubuntu-latest
           - ubuntu-24.04
+          - ubuntu-24.04-arm
           - ubuntu-22.04
-          - ubuntu-20.04
+          - ubuntu-22.04-arm
       port_number:
         type: number
         description: Port number for frp service
@@ -22,7 +22,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ github.event.inputs.Linux }}
+    runs-on: ${{ github.event.inputs.ubuntu_version }}
     strategy:
       fail-fast: false
     steps:
@@ -38,3 +38,4 @@ jobs:
           FRPC_TLS_CERTIFICATE: ${{ secrets.FRPC_TLS_CERTIFICATE }}
           FRPC_TLS_CA_CERTIFICATE: ${{ secrets.FRPC_TLS_CA_CERTIFICATE }}
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          RUNNER_IMAGE: ${{ inputs.ubuntu_version }}

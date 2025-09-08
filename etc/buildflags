@@ -1,6 +1,10 @@
 #!/usr/bin/bash
-
-BASE_CFLAGS="-march=native -Ofast -fno-plt"
+if [ $(uname -m) == "aarch64" ]; then
+    ARCH_CFLAGS="-mcpu=native"
+else
+    ARCH_CFLAGS="-march=native"
+fi
+BASE_CFLAGS="$ARCH_CFLAGS -Ofast -fno-plt"
 BASE_LDFLAGS="-s -Wl,-O2,--gc-sections"
 CLANG_CFLAGS="$BASE_CFLAGS -flto=full"
 CLANG_LDFLAGS="$BASE_LDFLAGS -fuse-ld=lld"
