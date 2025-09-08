@@ -24,31 +24,44 @@ echo 1024 | tee \
     sd[a-z]/queue/read_ahead_kb
 popd
 
-# Disable swap
-swapoff -a
-rm -f /mnt/swapfile
-
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
 mount -o remount,nodiscard,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /
 
-# ext4 mount options for /mnt
-source /etc/os-release
-if [ "$VERSION_ID" == "24.04" ]; then
-    umount /mnt
-    modprobe brd rd_size=65536 max_part=1
-    mke2fs -F -O journal_dev /dev/ram0
-    mke2fs -F -O ^resize_inode,has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data -E num_backup_sb=0 -J device=/dev/ram0 -m 0 /dev/disk/cloud/azure_resource-part1
-    mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 /dev/disk/cloud/azure_resource-part1 /mnt
-    # sudo mkfs.btrfs -f -O block-group-tree /dev/disk/cloud/azure_resource-part1
-    # mount -o nodev,noatime,lazytime,nobarrier,commit=21600,compress-force=zstd:15,nodiscard,ssd /dev/disk/cloud/azure_resource-part1 /mnt
-else
-    tune2fs -O fast_commit /dev/disk/cloud/azure_resource-part1
-    mount -o remount,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /mnt
-fi
+# Disable swap
+swapoff -a
+rm -f /mnt/swapfile
 
-# /mnt permission
-chown runner:docker /mnt
+TMP_DEVICE=$(findmnt -n -o SOURCE /mnt) 
+if [ $TMP_DEVICE ]; then
+    # ext4 mount options for /mnt
+    source /etc/os-release
+    if [ "$VERSION_ID" == "24.04" ]; then
+        umount /mnt
+        modprobe brd rd_size=65536 max_part=1
+        mke2fs -F -O journal_dev /dev/ram0
+        mke2fs -F -O ^resize_inode,has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data -E num_backup_sb=0 -J device=/dev/ram0 -m 0 $TMP_DEVICE
+        mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 $TMP_DEVICE /mnt
+        # sudo mkfs.btrfs -f -O block-group-tree $TMP_DEVICE
+        # mount -o nodev,noatime,lazytime,nobarrier,commit=21600,compress-force=zstd:15,nodiscard,ssd $TMP_DEVICE /mnt
+    else
+        tune2fs -O fast_commit $TMP_DEVICE
+        mount -o remount,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /mnt
+    fi
+
+    # /mnt permission
+    chown runner:docker /mnt
+
+    # Docker
+    mkdir -p /etc/docker
+    echo '{"data-root": "/mnt/docker"}' > /etc/docker/daemon.json
+    systemctl restart docker
+
+    # Move $HOME to /mnt
+    mv /home/runner /mnt/runner
+    ln -sf /mnt/runner /home/runner
+    chown -h runner:docker /home/runner
+fi
 
 # Mount /tmp as tmpfs
 mount -t tmpfs -o rw,nodev,noatime,nodiratime,lazytime,size=$(awk '/MemTotal/{print $2}' /proc/meminfo)K tmpfs /tmp
@@ -147,19 +160,9 @@ echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
 echo "KbdInteractiveAuthentication yes" >> /etc/ssh/sshd_config
 systemctl restart ssh.socket
 
-# Docker
-mkdir -p /etc/docker
-echo '{"data-root": "/mnt/docker"}' > /etc/docker/daemon.json
-systemctl restart docker
-
 # Add runner to kvm group
 groupadd -r kvm
 gpasswd -a runner kvm
-
-# Move $HOME to /mnt
-mv /home/runner /mnt/runner
-ln -sf /mnt/runner /home/runner
-chown -h runner:docker /home/runner
 
 # Fix arm default shell
 chsh -s $(which bash)
