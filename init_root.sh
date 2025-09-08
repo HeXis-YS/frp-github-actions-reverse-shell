@@ -18,8 +18,8 @@ echo 0 | tee \
     sd[a-z]/queue/rotational
 echo 2 | tee \
     sd[a-z]/queue/rq_affinity
-echo 4096 | tee \
-    sd[a-z]/queue/nr_requests
+# echo 4096 | tee \
+#     sd[a-z]/queue/nr_requests
 echo 1024 | tee \
     sd[a-z]/queue/read_ahead_kb
 popd
@@ -165,7 +165,7 @@ groupadd -r kvm
 gpasswd -a runner kvm
 
 # Fix arm default shell
-chsh -s $(which bash)
+chsh -s $(which bash) runner
 
 # Synchronize caches
 sync
