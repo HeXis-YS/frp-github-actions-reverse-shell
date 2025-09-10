@@ -2,6 +2,7 @@
 # This script should be run as root
 
 # Configure libs
+echo /usr/local/lib > /etc/ld.so.conf.d/00_custom.conf
 echo /lib/$(uname -m)-linux-gnu/libeatmydata.so > /etc/ld.so.preload
 ldconfig
 
