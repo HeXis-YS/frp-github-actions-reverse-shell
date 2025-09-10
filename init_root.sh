@@ -53,15 +53,22 @@ if [ $TMP_DEVICE ]; then
     # /mnt permission
     chown runner:docker /mnt
 
-    # Docker
-    mkdir -p /etc/docker
-    echo '{"data-root": "/mnt/docker"}' > /etc/docker/daemon.json
-    systemctl restart docker
-
-    # Move $HOME to /mnt
-    mv /home/runner /mnt/runner
-    ln -sf /mnt/runner /home/runner
-    chown -h runner:docker /home/runner
+    # Make OverlayFS on /mnt
+    mkdir -p /mnt/.overlay
+    pushd /mnt/.overlay
+    mkdir -p work_dir upper_dir merged_dir
+    mount -t overlay overlay -o lowerdir=/,upperdir=upper_dir,workdir=work_dir merged_dir
+    pushd merged_dir
+    mounts=$(awk '{print $2}' /proc/mounts)
+    for mp in $mounts; do
+        if [ "$mp" == "/" ] || [ "$mp" == "/mnt"* ]; then
+            continue
+        fi
+        mount --rbind $mp .$mp
+        mount --make-rslave .$mp
+    done
+    popd
+    popd
 fi
 
 # Mount /tmp as tmpfs
@@ -166,7 +173,7 @@ groupadd -r kvm
 gpasswd -a runner kvm
 
 # Fix arm default shell
-chsh -s $(which bash) runner
+chsh -s /usr/local/bin/overlay-root runner
 
 # Synchronize caches
 sync
