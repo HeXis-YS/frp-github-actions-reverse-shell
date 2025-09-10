@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-if [ -d /mnt/.overlay/merged_dir ] && [ ! -f /mnt/.overlay/merged_dir/disable ]; then
+if [ -d /mnt/.overlay/merged_dir ] && [ ! -f /tmp/disable_overlay ]; then
   exec sudo chroot /mnt/.overlay/merged_dir su - $USER || /usr/bin/bash
 else
   /usr/bin/bash

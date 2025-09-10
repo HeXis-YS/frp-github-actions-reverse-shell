@@ -29,6 +29,13 @@ popd
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
 mount -o remount,nodiscard,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /
 
+# Mount /tmp as tmpfs
+mv /tmp /tmp_
+mkdir -p /tmp
+mount -t tmpfs -o rw,nodev,noatime,nodiratime,lazytime,size=$(awk '/MemTotal/{print $2}' /proc/meminfo)K tmpfs /tmp
+cp -a /tmp_/. /tmp
+rm -rf /tmp_
+
 # Disable swap
 swapoff -a
 rm -f /mnt/swapfile
@@ -61,18 +68,16 @@ if [ $TMP_DEVICE ]; then
     pushd merged_dir
     mounts=$(awk '{print $2}' /proc/mounts)
     for mp in $mounts; do
-        if [ "$mp" == "/" ] || [ "$mp" == "/mnt"* ]; then
+        if [ "$mp" == "/" ] || [[ "$mp" == "/mnt"* ]]; then
             continue
         fi
         mount --rbind $mp .$mp
         mount --make-rslave .$mp
     done
+    mount --bind /tmp tmp
     popd
     popd
 fi
-
-# Mount /tmp as tmpfs
-mount -t tmpfs -o rw,nodev,noatime,nodiratime,lazytime,size=$(awk '/MemTotal/{print $2}' /proc/meminfo)K tmpfs /tmp
 
 # Sysctl
 sysctl -w \
@@ -172,8 +177,8 @@ systemctl restart ssh.socket
 groupadd -r kvm
 gpasswd -a runner kvm
 
-# Fix arm default shell
-chsh -s /usr/local/bin/overlay-root runner
+# Fix default shell on arm platform
+chsh -s /usr/local/bin/overlay-shell runner
 
 # Synchronize caches
 sync
