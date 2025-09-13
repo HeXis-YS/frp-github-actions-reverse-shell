@@ -11,7 +11,7 @@ trap {
 pushd D:\
 git clone --depth 1 --single-branch --no-tags https://github.com/HeXis-YS/windows-defender-remover
 ./windows-defender-remover/Script_Run.bat
-rm windows-defender-remover -r -fo
+# rm windows-defender-remover -r -fo
 popd
 
 # Install OpenSSH
