@@ -1,8 +1,5 @@
 #!/usr/bin/bash
 
-sudo install -D etc/buildflags /usr/local/etc/action-shell/.buildflags
-sudo install -m755 bin/* /usr/local/bin/
-
 source /usr/local/etc/action-shell/.buildflags
 
 pushd /tmp

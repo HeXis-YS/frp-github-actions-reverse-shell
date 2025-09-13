@@ -2,12 +2,13 @@
 # This script should be run as root
 
 # Configure libs
-echo /usr/local/lib > /etc/ld.so.conf.d/00_custom.conf
+echo /usr/local/lib > /etc/ld.so.conf.d/00custom.conf
 echo /lib/$(uname -m)-linux-gnu/libeatmydata.so > /etc/ld.so.preload
 ldconfig
 
 # Useful programs
 install -m 755 bin/* /usr/local/bin/
+cp -r etc /usr/local/etc/action-shell
 
 # Disk tweaks
 pushd /sys/class/block

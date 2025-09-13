@@ -4,9 +4,9 @@ if [ $(uname -m) == "aarch64" ]; then
 else
     ARCH_CFLAGS="-march=native"
 fi
-BASE_CFLAGS="$ARCH_CFLAGS -Ofast -fno-plt"
+BASE_CFLAGS="$ARCH_CFLAGS -fno-plt"
 BASE_LDFLAGS="-s -Wl,-O2,--gc-sections"
-CLANG_CFLAGS="$BASE_CFLAGS -flto=full"
+CLANG_CFLAGS="$BASE_CFLAGS -O3 -ffast-math -flto=full"
 CLANG_LDFLAGS="$BASE_LDFLAGS -fuse-ld=lld"
-GCC_CFLAGS="$BASE_CFLAGS -flto -flto-partition=none -fipa-pta -fno-semantic-interposition -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections"
+GCC_CFLAGS="$BASE_CFLAGS -Ofast -flto -flto-partition=none -fipa-pta -fno-semantic-interposition -fdevirtualize-at-ltrans -ffunction-sections -fdata-sections"
 GCC_LDFLAGS="$BASE_LDFLAGS -fuse-linker-plugin"

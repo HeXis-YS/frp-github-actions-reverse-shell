@@ -1,0 +1,34 @@
+#!/usr/bin/bash -e
+BUILD_MARKER=/usr/local/etc/action-shell/docker/.build_done
+
+if [[ $1 == "reset" ]]; then
+    docker rm rhino || true
+    docker rmi rhino-linux || true
+    sudo rm -rf $BUILD_MARKER
+    exit 0
+elif [[ ! -f $BUILD_MARKER ]]; then
+    pushd /usr/local/etc/action-shell/docker
+    if [[ ! -d zlib-ng ]]; then
+        sudo mkdir zlib-ng
+        sudo cp -P /usr/local/lib/libz.so* zlib-ng/
+    fi
+    docker build --network host --build-arg KVM_GID=$(stat -c %g /dev/kvm) -t rhino-linux .
+    sudo mkdir -p /tmp/rhino
+    sudo chmod 1777 /tmp/rhino
+    popd
+    sudo touch $BUILD_MARKER
+fi
+
+docker start -ai rhino || \
+docker run \
+    --network host \
+    --name rhino \
+    -v /mnt:/mnt \
+    -v /dev:/dev \
+    -v /tmp/rhino:/tmp \
+    -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    -e container=docker \
+    --tmpfs /run \
+    --tmpfs /run/lock \
+    --privileged \
+    -it rhino-linux
