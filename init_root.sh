@@ -11,20 +11,17 @@ install -m 755 bin/* /usr/local/bin/
 cp -r etc /usr/local/etc/action-shell
 
 # Disk tweaks
-pushd /sys/class/block
-echo none | tee \
-    sd[a-z]/queue/scheduler
-echo 0 | tee \
-    sd[a-z]/queue/add_random \
-    sd[a-z]/queue/iostats \
-    sd[a-z]/queue/rotational
-echo 2 | tee \
-    sd[a-z]/queue/rq_affinity
-# echo 4096 | tee \
-#     sd[a-z]/queue/nr_requests
-echo 1024 | tee \
-    sd[a-z]/queue/read_ahead_kb
-popd
+for queue in /sys/block/*/queue; do
+    echo 0 > $queue/add_random
+    echo 0 > $queue/iostats
+    echo 4096 > $queue/nr_requests
+    echo 0 > $queue/rotational
+    echo 2 > $queue/rq_affinity
+    echo none > $queue/scheduler
+done
+for queue in /sys/block/sd[a-z]/queue; do
+    echo 1024 > $queue/read_ahead_kb
+done
 
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
@@ -48,6 +45,8 @@ if [ $TMP_DEVICE ]; then
     if [ "$VERSION_ID" == "24.04" ]; then
         umount /mnt
         modprobe brd rd_size=65536 max_part=1 rd_nr=1
+        echo 2 > /sys/block/ram0/queue/nomerges
+        echo 0 > /sys/block/ram0/queue/read_ahead_kb
         mke2fs -F -O journal_dev /dev/ram0
         mke2fs -F -O ^resize_inode,^ext_attr,has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data -E num_backup_sb=0 -J device=/dev/ram0 -m 0 $TMP_DEVICE
         mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 $TMP_DEVICE /mnt
@@ -70,6 +69,7 @@ fi
 # Sysctl
 sysctl -w \
     kernel.core_pattern="|/usr/bin/false" \
+    kernel.printk_devkmsg=off \
     kernel.randomize_va_space=0 \
     kernel.sched_autogroup_enabled=0 \
     kernel.unprivileged_bpf_disabled=1 \
@@ -115,8 +115,10 @@ sysctl -w \
     net.ipv6.icmp.echo_ignore_all=1 \
     vm.dirty_background_ratio=5 \
     vm.dirty_ratio=50 \
-    vm.dirty_writeback_centisecs=1500 \
+    vm.dirty_expire_centisecs=3000 \
+    vm.dirty_writeback_centisecs=3000 \
     vm.extfrag_threshold=100 \
+    vm.stat_interval=10 \
     vm.mmap_min_addr=65536 \
     vm.vfs_cache_pressure=50
 
@@ -148,6 +150,8 @@ sysctl -w  \
     vm.watermark_boost_factor=0 \
     vm.watermark_scale_factor=125 \
     vm.page-cluster=0
+echo 2 > /sys/block/zram0/queue/nomerges
+echo 0 > /sys/block/zram0/queue/read_ahead_kb
 
 # OpenSSH cipher and kex
 # bash -c 'echo "Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
