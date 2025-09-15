@@ -1,8 +1,12 @@
-FROM ghcr.io/rhino-linux/docker:latest
+FROM debian:sid-slim
 
+ARG UID
+ARG GID
 ARG KVM_GID
-ENV DEBIAN_FRONTEND=noninteractive
 
-COPY zlib-ng/* /usr/local/lib/
+COPY zlib-ng/. /usr/local/lib/
 COPY init.sh /init.sh
-RUN sudo bash -e /init.sh ${KVM_GID}
+RUN bash -e /init.sh ${UID} ${GID} ${KVM_GID}
+
+USER debian
+WORKDIR /mnt

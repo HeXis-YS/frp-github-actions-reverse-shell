@@ -1,0 +1,39 @@
+#!/usr/bin/bash -e
+MARKER=/usr/local/etc/action-shell/docker/.build_done
+
+if [[ $1 == "reset" ]]; then
+    docker rm debian || true
+    docker rmi debian-image || true
+    sudo rm -rf $MARKER
+    exit 0
+elif [[ ! -f $MARKER ]]; then
+    pushd /usr/local/etc/action-shell/docker
+    if [[ ! -d zlib-ng ]]; then
+        sudo mkdir zlib-ng
+        sudo cp -P /usr/local/lib/libz.so* zlib-ng/
+    fi
+    docker build \
+        --network host \
+        --build-arg UID=$(id -u runner) \
+        --build-arg GID=$(id -g runner) \
+        --build-arg KVM_GID=$(stat -c %g /dev/kvm) \
+        -t debian-image .
+    sudo mkdir -p /tmp/debian
+    sudo chmod 1777 /tmp/debian
+    popd
+    sudo touch $MARKER
+fi
+
+docker start -ai debian || \
+docker run \
+    --network host \
+    --name debian \
+    -v /mnt:/mnt \
+    -v /dev:/dev \
+    -v /tmp/debian:/tmp \
+    -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    -e container=docker \
+    --tmpfs /run \
+    --tmpfs /run/lock \
+    --privileged \
+    -it debian-image
