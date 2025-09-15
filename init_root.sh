@@ -47,7 +47,7 @@ if [ $TMP_DEVICE ]; then
     source /etc/os-release
     if [ "$VERSION_ID" == "24.04" ]; then
         umount /mnt
-        modprobe brd rd_size=65536 max_part=1
+        modprobe brd rd_size=65536 max_part=1 rd_nr=1
         mke2fs -F -O journal_dev /dev/ram0
         mke2fs -F -O ^resize_inode,^ext_attr,has_journal,sparse_super2,fast_commit,orphan_file,extent,flex_bg,inline_data -E num_backup_sb=0 -J device=/dev/ram0 -m 0 $TMP_DEVICE
         mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 $TMP_DEVICE /mnt
