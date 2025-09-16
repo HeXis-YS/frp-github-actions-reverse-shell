@@ -11,7 +11,7 @@ echo /usr/local/lib > /etc/ld.so.conf.d/00custom.conf
 echo /lib/$(uname -m)-linux-gnu/libeatmydata.so > /etc/ld.so.preload
 ldconfig
 
-# Add user
+# Add unprivileged user
 apt install -y adduser sudo
 addgroup --gid $2 debian
 adduser --uid $1 --gid $2 --disabled-password --gecos "" debian
@@ -23,7 +23,10 @@ addgroup --gid $3 kvm || groupmod -g $3 kvm
 gpasswd -a debian kvm || true
 
 # Install dependencies
-apt install -y udev nano readline-common
+apt install -y udev nano readline-common git
+
+# Always assume yes
+echo 'APT::Get::Assume-Yes "true";' > /etc/apt/apt.conf.d/90assumeyes
 
 # Fix color terminal
 sed -i 's/#force_color_prompt/force_color_prompt/' /home/debian/.bashrc
