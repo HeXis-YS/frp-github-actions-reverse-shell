@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-source /usr/local/etc/action-shell/.buildflags
+source /usr/local/etc/action-shell/buildflags
 
 pushd /tmp
 
