@@ -52,23 +52,23 @@ if [ $TMP_DEVICE ]; then
         mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 $TMP_DEVICE /mnt
         # sudo mkfs.btrfs -f -O block-group-tree $TMP_DEVICE
         # mount -o nodev,noatime,lazytime,nobarrier,commit=21600,compress-force=zstd:15,nodiscard,ssd $TMP_DEVICE /mnt
+
+        # /mnt permission
+        chown runner:docker /mnt
+    
+        # Docker
+        mkdir -p /etc/docker
+        echo '{"data-root": "/mnt/.docker"}' > /etc/docker/daemon.json
+        systemctl restart docker
+    
+        mkdir -p /mnt/.root
+        mv /root /home /mnt/.root/
+        ln -sf /mnt/.root/root /root
+        ln -sf /mnt/.root/home /home
     else
         tune2fs -O fast_commit $TMP_DEVICE
         mount -o remount,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /mnt
     fi
-
-    # /mnt permission
-    chown runner:docker /mnt
-
-    # Docker
-    mkdir -p /etc/docker
-    echo '{"data-root": "/mnt/.docker"}' > /etc/docker/daemon.json
-    systemctl restart docker
-
-    mkdir -p /mnt/.root
-    mv /root /home /mnt/.root/
-    ln -sf /mnt/.root/root /root
-    ln -sf /mnt/.root/home /home
 fi
 
 # Sysctl
