@@ -64,6 +64,11 @@ if [ $TMP_DEVICE ]; then
     mkdir -p /etc/docker
     echo '{"data-root": "/mnt/.docker"}' > /etc/docker/daemon.json
     systemctl restart docker
+
+    mkdir -p /mnt/.root
+    mv /root /home /mnt/.root/
+    ln -sf /mnt/.root/root /root
+    ln -sf /mnt/.root/home /home
 fi
 
 # Sysctl
