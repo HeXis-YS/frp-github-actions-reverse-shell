@@ -52,9 +52,6 @@ if [ $TMP_DEVICE ]; then
         mount -o nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,data=writeback,inode_readahead_blks=4096 $TMP_DEVICE /mnt
         # sudo mkfs.btrfs -f -O block-group-tree $TMP_DEVICE
         # mount -o nodev,noatime,lazytime,nobarrier,commit=21600,compress-force=zstd:15,nodiscard,ssd $TMP_DEVICE /mnt
-
-        # /mnt permission
-        chown runner:docker /mnt
     
         # Docker
         mkdir -p /etc/docker
@@ -70,6 +67,9 @@ if [ $TMP_DEVICE ]; then
         mount -o remount,nodev,noatime,lazytime,nobarrier,noauto_da_alloc,commit=21600,inode_readahead_blks=4096 /mnt
     fi
 fi
+
+# /mnt permission
+chown runner:docker /mnt
 
 # Sysctl
 sysctl -w \
