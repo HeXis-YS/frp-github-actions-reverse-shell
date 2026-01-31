@@ -7,7 +7,6 @@ if [ ! -x frpc ]; then
     FRPC_URL="https://github.com/HeXis-YS/build-script/releases/latest/download/frpc_linux_amd64_v3"
     if [ $(uname -m) == "aarch64" ]; then
         FRPC_URL="https://github.com/HeXis-YS/build-script/releases/latest/download/frpc_linux_arm64_v9.0"
-        curl -fsSLo frpc 
     fi
     curl -fsSLo frpc $FRPC_URL
     chmod 755 frpc
