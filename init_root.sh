@@ -14,14 +14,14 @@ cp -r etc /usr/local/etc/action-shell
 for queue in /sys/block/*/queue; do
     echo 0 > $queue/add_random
     echo 0 > $queue/iostats
-    echo 4096 > $queue/nr_requests
+    # echo 4096 > $queue/nr_requests
     echo 0 > $queue/rotational
     echo 2 > $queue/rq_affinity
     echo none > $queue/scheduler
 done
-for queue in /sys/block/sd[a-z]/queue; do
-    echo 1024 > $queue/read_ahead_kb
-done
+# for queue in /sys/block/sd[a-z]/queue; do
+#     echo 1024 > $queue/read_ahead_kb
+# done
 
 # ext4 mount options for /
 tune2fs -O fast_commit $(findmnt -n -o SOURCE /)
@@ -114,14 +114,12 @@ sysctl -w \
     net.ipv4.udp_rmem_min=8192 \
     net.ipv4.udp_wmem_min=8192 \
     net.ipv6.conf.all.accept_redirects=0 \
-    net.ipv6.conf.all.secure_redirects=0 \
     net.ipv6.conf.default.accept_redirects=0 \
-    net.ipv6.conf.default.secure_redirects=0 \
     net.ipv6.icmp.echo_ignore_all=1 \
     vm.dirty_background_ratio=5 \
     vm.dirty_ratio=50 \
     vm.dirty_expire_centisecs=3000 \
-    vm.dirty_writeback_centisecs=3000 \
+    vm.dirty_writeback_centisecs=1500 \
     vm.extfrag_threshold=100 \
     vm.stat_interval=10 \
     vm.mmap_min_addr=65536 \
