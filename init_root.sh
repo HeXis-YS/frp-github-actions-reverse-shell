@@ -116,7 +116,7 @@ echo -e '#!/bin/sh\nexit 0' > /usr/bin/mandb
 chmod 755 /usr/bin/mandb
 
 # ZRAM
-apt update
+# apt update
 apt install -y linux-modules-extra-$(uname -r) earlyoom
 systemctl start earlyoom
 modprobe zram
