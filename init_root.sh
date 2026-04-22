@@ -120,17 +120,22 @@ chmod 755 /usr/bin/mandb
 apt install -y linux-modules-extra-$(uname -r) earlyoom
 systemctl start earlyoom
 modprobe zram
-echo zstd > /sys/block/zram0/comp_algorithm
-echo $(($(awk '/MemTotal/{print $2}' /proc/meminfo) * 2))K > /sys/block/zram0/disksize
-mkswap /dev/zram0
-swapon -p 0 /dev/zram0
-sysctl -w  \
-    vm.swappiness=200 \
-    vm.watermark_boost_factor=0 \
-    vm.watermark_scale_factor=125 \
-    vm.page-cluster=0
-echo 2 > /sys/block/zram0/queue/nomerges
-echo 0 > /sys/block/zram0/queue/read_ahead_kb
+if [ -d "/sys/class/block/zram0" ]; then
+    pushd /sys/class/block/zram0
+    echo zstd > comp_algorithm
+    [ -f "algorithm_params" ] && echo "level=1" > algorithm_params
+    echo $(($(awk '/MemTotal/{print $2}' /proc/meminfo) * 2))K > disksize
+    echo 2 > queue/nomerges
+    echo 0 > queue/read_ahead_kb
+    popd
+    mkswap /dev/zram0
+    swapon -p 0 /dev/zram0
+    sysctl -w  \
+        vm.swappiness=200 \
+        vm.watermark_boost_factor=0 \
+        vm.watermark_scale_factor=125 \
+        vm.page-cluster=0
+fi
 
 # OpenSSH cipher and kex
 # bash -c 'echo "Ciphers aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com" >> /etc/ssh/sshd_config.d/60-custom.conf'
